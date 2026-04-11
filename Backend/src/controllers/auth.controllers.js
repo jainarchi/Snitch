@@ -2,9 +2,13 @@ import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
+
+
+
 const tokenInResponse = (user, res, message) => {
   
-  const token = jwt.sign({ id: user._id }, 
+  const token = jwt.sign(
+    { id: user._id }, 
     config.JWT_SECRET_KEY, 
     { expiresIn: "7d" }
   );
@@ -35,7 +39,7 @@ const tokenInResponse = (user, res, message) => {
  * @description Register a new user
  */
 const registerUser = async (req, res) => {
-  const { fullname, contact, email, password, role } = req.body;
+  const { fullname, contact, email, password, isSeller } = req.body;
 
   try {
     const userExists = await userModel.findOne({
@@ -53,7 +57,7 @@ const registerUser = async (req, res) => {
       contact,
       email,
       password,
-      role,
+      role: isSeller ? "seller" : "buyer",
     });
 
     tokenInResponse(user, res, "User registered successfully")
@@ -66,6 +70,8 @@ const registerUser = async (req, res) => {
     });
   }
 };
+
+
 
 
 /** 
@@ -89,6 +95,7 @@ const loginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({
         message: "Invalid credentials",
+        
       });
     }
 
