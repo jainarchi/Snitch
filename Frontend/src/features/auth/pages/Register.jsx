@@ -30,12 +30,11 @@ const Register = () => {
      
     const res = await handleRegister(formData)
     navigate('/' ,  {replace: true})
-    
+
     console.log('Form Submitted', formData)
   }
 
-
-
+  
   return (
     <div className="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container min-h-screen w-full relative sm:h-screen sm:overflow-hidden">
       
