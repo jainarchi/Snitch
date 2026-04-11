@@ -1,18 +1,36 @@
-import { config } from "dotenv";
 import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import { config } from "../config/config.js";
 
 
 
-const tokenInResponse = (userId) => {
+const tokenInResponse = (user, res , message) => {
 
-  return token = jwt.sign(
-    { id: userId }, 
+  const token = jwt.sign(
+    { id: user._id }, 
     config.JWT_SECRET_KEY,
     { expiresIn: "7d"}
   )
-}
 
+  res.cookie("token" , token , {
+    httpOnly : true ,
+    maxAge : 7 * 24 * 60 * 60 * 1000,
+    sameSite : "none",
+    secure : config.NODE_ENV === "production"
+  })
+
+  res.status(200).json({
+    message : message,
+    user:{
+        fullname : user.fullname,
+        email : user.email,
+        contact : user.contact,
+        role : user.role
+    }    
+  })
+
+
+}
 
 
 const registerUser = async (req, res) => {
@@ -38,9 +56,8 @@ const registerUser = async (req, res) => {
       role,
     })
 
-    res.status(201).json({
-      message: "User registered successfully",
-    })
+
+    tokenInResponse(user , res , "User registered successfully")
 
 
   } catch (err) {
@@ -51,6 +68,11 @@ const registerUser = async (req, res) => {
   }
 
 }
+
+
+
+
+
 
 
 export {
