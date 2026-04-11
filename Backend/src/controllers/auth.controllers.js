@@ -3,9 +3,11 @@ import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
 const tokenInResponse = (user, res, message) => {
-  const token = jwt.sign({ id: user._id }, config.JWT_SECRET_KEY, {
-    expiresIn: "7d",
-  });
+  
+  const token = jwt.sign({ id: user._id }, 
+    config.JWT_SECRET_KEY, 
+    { expiresIn: "7d" }
+  );
 
   res.cookie("token", token, {
     httpOnly: true,
