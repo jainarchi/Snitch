@@ -26,3 +26,14 @@ export const validateRegister = [
 
     validateRequest
 ]
+
+export const validateLogin = [
+
+    body("email")
+        .isEmail().withMessage("Invalid email format"),
+    body("password")
+        .isLength({ min: 1 }).withMessage("Password is required"),
+
+        
+    validateRequest
+]
