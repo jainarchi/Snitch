@@ -2,6 +2,10 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import cors from 'cors'
+import config from './config/config.js'
+import passport from 'passport'
+import {Strategy as GoogleStrategy} from 'passport-google-oauth20'
+
 
 
 const app = express()
@@ -15,6 +19,20 @@ app.use(cookieParser())
 //         methods :["POST" , "GET" , "PUT" , "DELETE"]
 //     }
 // ))
+
+
+
+app.use(passport.initialize())
+
+passport.use(new GoogleStrategy({
+    clientID : config.GOOGLE_CLIENT_ID ,
+    clientSecret : config.GOOGLE_CLIENT_SECRET ,
+    callbackURL : '/api/auth/google/callback'   
+} , (accessToken , refreshToken , profile , done) => {
+    // Here you would typically find or create a user in your database
+   console.log(profile)
+    return done(null , profile)
+}))
 
 
 import authRouter from './routes/auth.routes.js'

@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import {registerUser , loginUser} from '../controllers/auth.controllers.js'
+import {registerUser , loginUser , googleCallback } from '../controllers/auth.controllers.js'
 import {validateRegister , validateLogin} from '../validation/auth.validator.js'
 
 
@@ -22,6 +22,19 @@ router.post('/register' , validateRegister , registerUser )
 router.post('/login' , validateLogin , loginUser )
 
 
+/**
+ * @route GET /api/auth/google
+ * @description Authenticate with Google
+ * @access Public
+ */
+router.get('/google' , passport.authenticate('google' , {scope : ['profile' , 'email']}) )
 
+
+/**
+ * @route GET /api/auth/google/callback
+ * @description Google authentication callback
+ * @access Public
+ */
+router.get('/google/callback' , passport.authenticate('google' , {failureRedirect : '/login' , session : false  }) , googleCallback)
 
 export default router

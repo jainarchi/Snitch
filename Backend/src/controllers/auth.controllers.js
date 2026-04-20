@@ -31,7 +31,7 @@ const tokenInResponse = (user, res, message) => {
       role: user.role,
     },
   });
-};
+}
 
 
 /**
@@ -112,8 +112,17 @@ const loginUser = async (req, res) => {
 }
 
 
+const googleCallback =  (req, res) => {
+    // This function is called after successful Google authentication
+    const userProfile = req.user;
+    console.log(userProfile);
+    res.json(userProfile);
+
+    res.redirect('http://localhost:5173/'); 
+  };
 
 
 
 
-export { registerUser  , loginUser}
+
+export { registerUser  , loginUser , googleCallback}
