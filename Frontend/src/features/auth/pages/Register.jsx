@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import {useAuth} from '../hook/useAuth.js'
+import ContinueWithGoogleButton from '../components/ContinueWithGoogleButton.jsx';
 
 
 
@@ -28,7 +29,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
      
-    const res = await handleRegister(formData)
+    await handleRegister(formData)
     navigate('/' ,  {replace: true})
 
     console.log('Form Submitted', formData)
@@ -52,7 +53,7 @@ const Register = () => {
         
         {/* Left Side: Typography */}
         <div className="flex flex-col flex-1 mb-6 md:mb-0 text-center md:text-left pt-6 sm:pt-0">
-          <h1 className="font-headline text-4xl md:text-6xl lg:text-[5rem] leading-tight md:leading-[0.9] font-extrabold tracking-tighter text-on-background mb-4 md:mb-8">
+          <h1 className="font-headline text-4xl md:text-6xl lg:text-[5rem] leading-tight md:leading-[0.9] font-bold tracking-tighter text-on-background mb-4 md:mb-8">
             WELCOME TO<br />
             <span className="text-primary-container">STITCH.</span>
           </h1>
@@ -66,9 +67,9 @@ const Register = () => {
         </div>
 
         {/* Right Side: Registration Form */}
-        <div className="w-full max-w-lg bg-surface-container-low/60 backdrop-blur-3xl p-7 sm:p-10 md:p-14 rounded-2xl sm:rounded-lg shadow-2xl mb-10 sm:mb-0">
+        <div className="w-full max-w-lg bg-surface-container-low/60 backdrop-blur-3xl p-4 sm:p-10 md:p-8 rounded-2xl sm:rounded-lg shadow-2xl mb-10 sm:mb-0 ">
           <div className="mb-10">
-            <h2 className="font-headline text-3xl font-bold tracking-tight mb-2">CREATE ACCOUNT</h2>
+            <h2 className="font-headline text-xl font-bold  mb-2 text-gray-50">CREATE ACCOUNT</h2>
             <p className="font-body text-sm text-stone-500">Enter your credentials to enter the store.</p>
           </div>
           
@@ -168,13 +169,17 @@ const Register = () => {
             {/* Register Button */}
             <div className="pt-6">
               <button 
-                className="w-full bg-gradient-to-r from-primary-fixed-dim to-primary-container text-on-primary font-headline font-extrabold py-3 sm:py-3 rounded-full uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-2 group cursor-pointer" 
+                className="w-full bg-gradient-to-r from-primary-fixed-dim to-primary-container text-on-primary font-headline font-bold py-2 sm:py-2 rounded-md uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-2 group cursor-pointer" 
                 type="submit"
               >
                 <span>Register</span>
                 <span className="text-xl transition-transform group-hover:translate-x-1">→</span>
               </button>
             </div>
+
+
+             {/* Continue with Google Button */}
+             <ContinueWithGoogleButton />
             
             <div className="pt-4 text-center">
               <p className="font-body text-[10px] text-stone-500 tracking-wider uppercase">

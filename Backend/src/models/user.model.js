@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     },
     contact :{
         type:String,
-        required:true,
+        required: false,
         unique:true
     },
     email:{
@@ -18,7 +18,9 @@ const userSchema = new mongoose.Schema({
     },
     password :{
         type : String,
-        required : true,
+        required : function (){
+            return  !this.googleId
+        },
         select : false
     },
     role:{
@@ -26,6 +28,9 @@ const userSchema = new mongoose.Schema({
         required : true,
         enum : ['buyer','seller'],
         default : 'buyer'
+    },
+    googleId : {
+        type : String
     }
 })
 

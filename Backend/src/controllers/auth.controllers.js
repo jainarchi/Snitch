@@ -90,6 +90,13 @@ const loginUser = async (req, res) => {
       });
     }
 
+    // if user is registered with google
+    if(user.password === undefined && user.googleId){
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
+    }
+
     const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
@@ -111,12 +118,43 @@ const loginUser = async (req, res) => {
   }
 }
 
+/** 
+ * continue with google login or register logic
+*/
 
-const googleCallback =  (req, res) => {
-    // This function is called after successful Google authentication
-    const userProfile = req.user;
-    console.log(userProfile);
-    res.json(userProfile);
+const googleCallback = async (req, res) => {
+    const userDetails = req.user
+    // console.log( 'user details -' , userDetails)
+
+    const{id , displayName , emails} = userDetails
+
+
+     let user = await userModel.findOne({
+        email : emails[0].value
+     })
+
+    if(!user ){
+      user = await userModel.create({
+        fullname : displayName,
+        email : emails[0].value,
+        googleId : id
+      })
+    }
+
+    const token = jwt.sign(
+      {id : user._id},
+      config.JWT_SECRET_KEY,
+      {expiresIn : "7d"}
+    )
+
+    res.cookie('token' , token , {
+      httpOnly : true,
+      maxAge : 7 * 24 * 60 * 60 * 1000,
+      sameSite : "none",
+      secure : config.NODE_ENV === "production"
+    })
+
+    
 
     res.redirect('http://localhost:5173/'); 
   };

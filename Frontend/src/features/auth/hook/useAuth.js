@@ -1,4 +1,4 @@
-import { register , login } from "../service/auth.api";
+import { register , login} from "../service/auth.api";
 import { useDispatch } from "react-redux";
 import { setError , setUser , setLoading } from "../state/auth.slice";
 
@@ -21,8 +21,10 @@ export const useAuth = () =>{
 
 
 
+
     return {
         handleRegister,
-        handleLogin
+        handleLogin,
+
     }
 }
