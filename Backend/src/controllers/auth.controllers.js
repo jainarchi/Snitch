@@ -51,6 +51,8 @@ const registerUser = async (req, res) => {
         message: "User already exists",
       });
     }
+    
+   console.log(isSeller)
 
     const user = await userModel.create({
       fullname,
@@ -124,7 +126,7 @@ const loginUser = async (req, res) => {
 
 const googleCallback = async (req, res) => {
     const userDetails = req.user
-    // console.log( 'user details -' , userDetails)
+    // console.log( 'user details :' , userDetails)
 
     const{id , displayName , emails} = userDetails
 
@@ -157,6 +159,15 @@ const googleCallback = async (req, res) => {
     
 
     res.redirect('http://localhost:5173/'); 
+
+    res.status(200).json({
+     message : "Login successful",
+     user : {
+      fullname : user.fullname,
+      email : user.email,
+      role : user.role
+     }
+    })
   };
 
 
