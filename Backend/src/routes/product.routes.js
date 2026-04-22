@@ -2,14 +2,51 @@ import { Router } from "express";
 import {authenticateSeller} from '../middlewares/auth.middleware.js'
 import { createProduct } from "../controllers/product.controllers.js";
 import multer from "multer";
+import {validateProduct} from '../validation/product.validator.js'
+
+
+
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
+
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true)
+  } else {
+    cb(new Error("Only JPG, PNG, WEBP files allowed"), false)
+  }
+}
 
 
 const upload = multer({
     storage : multer.memoryStorage(),
     limits : {
         fileSize : 3 * 1024 * 1024   // per file limit
-    }
+    },
+    fileFilter
 })
+
+
+const multerErrorHandler = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      success: false,
+      message: err.message
+    })
+  }
+
+  if (err) {
+    return res.status(400).json({
+      success: false,
+      message: err.message
+    })
+  }
+
+  next()
+}
+
+
+
+
 
 const router = Router()
 
@@ -19,7 +56,12 @@ const router = Router()
  * @access Private
  */
 
-router.post('/' , authenticateSeller , upload.array('images' , 5),   createProduct  )
+router.post('/' , 
+    authenticateSeller,
+    upload.array('images' , 5), 
+    multerErrorHandler,           // handle size/count/type errors
+    validateProduct ,   
+    createProduct  )
 
 
 
