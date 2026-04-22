@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {authenticateSeller} from '../middlewares/auth.middleware.js'
-import { createProduct } from "../controllers/product.controllers.js";
+import { createProduct , getAllProductsBySeller } from "../controllers/product.controllers.js";
 import multer from "multer";
 import {validateProduct} from '../validation/product.validator.js'
 
@@ -62,6 +62,18 @@ router.post('/' ,
     multerErrorHandler,           // handle size/count/type errors
     validateProduct ,   
     createProduct  )
+
+
+
+  /**
+   * @route GET /api/products/seller
+   * @description Get all products by seller
+   * @access Private
+   */
+
+
+router.get('/seller' , authenticateSeller , getAllProductsBySeller)    
+
 
 
 

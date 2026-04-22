@@ -57,4 +57,36 @@ const createProduct = async (req, res) => {
   }
 };
 
-export { createProduct };
+
+// get all products made by seller
+
+
+const getAllProductsBySeller = async (req , res) =>{
+  try{
+    const products = await productModel.find({seller : req.user.id})
+
+    if(!products || products.length === 0){
+      return res.status(404).json({
+        success : false,
+        message : "No products found"
+      })
+    }
+
+    res.status(200).json({
+      success : true ,
+      message : "Products fetched successfully",
+      products
+    })
+  }catch(err){
+    console.log(err)
+    res.status(500).json({
+      success : false,
+      message : "Something went wrong"
+    })
+  }
+}
+
+export {
+   createProduct , 
+   getAllProductsBySeller 
+};
