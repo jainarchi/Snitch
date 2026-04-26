@@ -4,31 +4,19 @@ import { createSlice } from "@reduxjs/toolkit";
 export const productSlice = createSlice({
     name : "products",
     initialState : {
-        products : [],
-        product : null,
-        loading : false,
-        error : null
+       sellerProducts: []
     },
     reducers : {
-        setProducts : (state , action) => {
-            state.products = action.payload
-        },
-
-        setProduct : (state , action) => {
-            state.product = action.payload
-        },
-
-        addProduct : (state , action) =>{
-            state.products = [...state.products , action.payload]
-        },
-
-        setLoading : (state , action) => {
-            state.loading = action.payload
-        },
-
-        setError : (state , action) => {
-            state.error = action.payload
-        }
+      setSellerProducts : (state , action) => {
+        state.sellerProducts = action.payload
+      },
+    
+      addSellerProduct : (state , action) => {
+        state.sellerProducts = [...state.sellerProducts , action.payload]
+      }
     }
 
 })
+
+export const {setSellerProducts , addSellerProduct} = productSlice.actions   
+export default productSlice.reducer 
