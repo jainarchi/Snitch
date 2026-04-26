@@ -40,6 +40,8 @@ router.get('/google' , passport.authenticate('google' , {scope : ['profile' , 'e
  *              exchange auth code with user details from google, user details availabe in req.user
  * @access Public
  */
+
+
 router.get('/google/callback' ,
      passport.authenticate('google' ,             // also check code is valid or not and get details from google then controller run
      { 
@@ -49,11 +51,14 @@ router.get('/google/callback' ,
       , googleCallback
     )
 
-    /**
-     * @route GET /api/auth/me
-     * @description Get user details
-     * @access Private
-     */
+
+
+
+  /**
+  * @route GET /api/auth/me
+  * @description Get user details
+  * @access Private
+  */
 
 router.get('/me' , authenticateUser , getMe )
 
