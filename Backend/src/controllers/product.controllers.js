@@ -86,6 +86,9 @@ const getAllProductsBySeller = async (req , res) =>{
   }
 }
 
+
+
+
 export {
    createProduct , 
    getAllProductsBySeller 

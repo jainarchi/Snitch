@@ -172,6 +172,25 @@ const googleCallback = async (req, res) => {
 
 
 
+  const getMe = async (req , res) =>{
+      const userId = req.user.id;
+
+      const user = await userModel.findById(userId)
+
+      if(!user){
+        res.status(400).json({
+          message : "Unauthorized"
+        })
+      }
+
+      res.status(200).json({
+        success : true,
+        message : "User fetched successfully",
+        user
+      })
+
+  }
 
 
-export { registerUser  , loginUser , googleCallback}
+
+export { registerUser  , loginUser , googleCallback , getMe}

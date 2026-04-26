@@ -61,7 +61,8 @@ router.post('/' ,
     upload.array('images' , 5), 
     multerErrorHandler,           // handle size/count/type errors
     validateProduct ,   
-    createProduct  )
+    createProduct 
+  )
 
 
 
