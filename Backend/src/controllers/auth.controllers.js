@@ -16,7 +16,7 @@ const tokenInResponse = (user, res, message) => {
   res.cookie("token", token, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: "none",
+    sameSite: config.NODE_ENV === "production" ? "none" : "lax" ,
     secure: config.NODE_ENV === "production",
   });
 
@@ -152,7 +152,7 @@ const googleCallback = async (req, res) => {
     res.cookie('token' , token , {
       httpOnly : true,
       maxAge : 7 * 24 * 60 * 60 * 1000,
-      sameSite : "none",
+      sameSite : config.NODE_ENV === "production" ? "none" : "lax" ,
       secure : config.NODE_ENV === "production"
     })
 

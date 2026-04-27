@@ -31,3 +31,10 @@ export async function login ({email , password }){
 
     return response.data
 }
+
+
+
+export function getMe (){
+    const response = authApi.get('/me');
+    return response.data
+}
