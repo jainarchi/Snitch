@@ -95,7 +95,7 @@ const CreateProduct = () => {
             >
                 <div className="max-w-6xl mx-auto px-8 lg:px-16 xl:px-24">
 
-                    {/* ── Top Bar ── */}
+                    {/*    Top Bar    */}
                     {/* <div className="pt-10 pb-0 flex items-center gap-5">
                         <button
                             onClick={() => navigate(-1)}
@@ -115,7 +115,7 @@ const CreateProduct = () => {
                         </span>
                     </div> */}
 
-                    {/* ── Page Header ── */}
+                    {/*    Page Header    */}
                     <div className="pt-4 pb-0">
                         <h1
                             className="text-4xl lg:text-5xl font-light leading-tight"
@@ -127,11 +127,11 @@ const CreateProduct = () => {
                         <div className="mt-4 w-14 h-px" style={{ backgroundColor: '#C9A96E' }} />
                     </div>
 
-                    {/* ── Form ── */}
+                    {/*    Form    */}
                     <form onSubmit={handleSubmit} className="pt-14 pb-24">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 lg:items-start">
 
-                            {/* ── LEFT COLUMN: Text Fields ── */}
+                            {/*    LEFT COLUMN: Text Fields    */}
                             <div className="flex flex-col gap-12">
 
                                 {/* Product Title */}
@@ -228,7 +228,7 @@ const CreateProduct = () => {
                                 </div>
                             </div>
 
-                            {/* ── RIGHT COLUMN: Images ── */}
+                            {/*    RIGHT COLUMN: Images    */}
                             <div className="flex flex-col gap-4">
                                 <div className="flex items-center justify-between">
                                     <label className="text-[10px] uppercase tracking-[0.2em] font-medium" style={{ color: '#7A6E63' }}>
@@ -314,7 +314,7 @@ const CreateProduct = () => {
                             </div>
                         </div>
 
-                        {/* ── Submit Button ── */}
+                        {/*    Submit Button    */}
                         <div className="mt-16 lg:mt-20">
                             <button
                                 type="submit"
