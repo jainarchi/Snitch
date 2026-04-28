@@ -10,12 +10,27 @@ const productApi = axios.create({
 export async function createProducts (formData){
  const response = await productApi.post('/' , formData)
  return response.data
- //message product
 }
 
 
+// get all products made by seller and show on seller dashboard
 export async function getAllProductsBySeller (){
     const response = await productApi.get('/seller')
     return response.data
-    // products
+  
+}
+
+
+export async function getAllProducts() {
+    const response = await productApi.get('/')
+    return response.data
+    
+}
+
+
+
+
+export async function getProductDetails(productId){
+    const response = await productApi.get(`/${productId}/details`)
+    return response.data
 }

@@ -1,22 +1,89 @@
+// import { createSlice } from "@reduxjs/toolkit";
+
+
+// export const productSlice = createSlice({
+//     name : "products",
+//     initialState : {
+//        sellerProducts: [],
+//        allProducts : []
+//     },
+//     reducers : {
+//       setSellerProducts : (state , action) => {
+//         state.sellerProducts = action.payload
+//       },
+    
+//       addSellerProduct : (state , action) => {
+//         state.sellerProducts = [...state.sellerProducts , action.payload]
+//       },
+
+//       setAllProducts : (state , action) => {
+//         state.allProducts = action.payload
+//       }
+//     }
+
+// })
+
+// export const {setSellerProducts , addSellerProduct , setAllProducts} = productSlice.actions   
+// export default productSlice.reducer 
+
+
+
 import { createSlice } from "@reduxjs/toolkit";
 
-
 export const productSlice = createSlice({
-    name : "products",
-    initialState : {
-       sellerProducts: []
+  name: "products",
+  initialState: {
+    sellerProducts: [],
+    allProducts: [],
+
+    loading: {
+      allProducts: false,
+      sellerProducts: false,
     },
-    reducers : {
-      setSellerProducts : (state , action) => {
-        state.sellerProducts = action.payload
-      },
-    
-      addSellerProduct : (state , action) => {
-        state.sellerProducts = [...state.sellerProducts , action.payload]
-      }
-    }
 
-})
+    error: {
+      allProducts: null,
+      sellerProducts: null,
+    },
+  },
 
-export const {setSellerProducts , addSellerProduct} = productSlice.actions   
-export default productSlice.reducer 
+  reducers: {
+    setLoading: (state, action) => {
+      const { key, value } = action.payload;
+      state.loading[key] = value;
+    },
+
+    setError: (state, action) => {
+      const { key, value } = action.payload;
+      state.error[key] = value;
+    },
+
+    clearError: (state, action) => {
+      const key = action.payload;
+      state.error[key] = null;
+    },
+
+    setSellerProducts: (state, action) => {
+      state.sellerProducts = action.payload;
+    },
+
+    addSellerProduct: (state, action) => {
+      state.sellerProducts.push(action.payload);
+    },
+
+    setAllProducts: (state, action) => {
+      state.allProducts = action.payload;
+    },
+  },
+});
+
+export const {
+  setSellerProducts,
+  addSellerProduct,
+  setAllProducts,
+  setLoading,
+  setError,
+  clearError,
+} = productSlice.actions;
+
+export default productSlice.reducer;
