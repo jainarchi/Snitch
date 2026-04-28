@@ -28,7 +28,7 @@ const createProduct = async (req, res) => {
     const { name, description, priceAmount, priceCurrency } = req.body;
 
     const product = await productModel.create({
-      seller: req.user.id,
+      seller: req.seller.id,
       name,
       description,
       price: {
@@ -63,7 +63,7 @@ const createProduct = async (req, res) => {
 
 const getAllProductsBySeller = async (req, res) => {
   try {
-    const products = await productModel.find({ seller: req.user.id })
+    const products = await productModel.find({ seller: req.seller.id })
 
     if (!products || products.length === 0) {
       return res.status(404).json({
@@ -153,11 +153,45 @@ const getAllProducts = async (req, res) => {
 }
 
 
+// delete product by seller controller 
+const deleteProduct = async (req, res) =>{
+  try{
+   const productId = req.params.id
+
+   const product = await productModel.findOneAndDelete({
+    _id : productId,
+    seller : req.seller.id
+   })
+
+
+   if(!product){
+    return res.status(404).json({
+      success : false,
+      message : "Product not found"
+    })
+   }
+
+   res.status(200).json({
+    success : true,
+    message : "Product deleted successfully"
+   })
+ }
+
+ catch(err){
+  console.log(err)
+  res.status(500).json({
+    success : false,
+    message : "Something went wrong"
+  })
+ }
+
+}
 
 
 export {
   createProduct,
   getAllProductsBySeller,
   getProductDetails,
-  getAllProducts
+  getAllProducts,
+  deleteProduct
 };

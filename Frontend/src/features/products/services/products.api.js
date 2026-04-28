@@ -36,3 +36,17 @@ export async function getProductDetails(productId){
     const response = await productApi.get(`/${productId}/details`)
     return response.data
 }
+
+
+export async function deleteProduct (productId){
+    const response = await productApi.delete(`/${productId}`)
+    return response.data
+}
+
+/*
+
+  more varient of product
+  edit product  | reuse create product page coponent
+  seller product | seller can see product details with edit option and buyer number
+  
+ */

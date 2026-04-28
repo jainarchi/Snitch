@@ -1,5 +1,5 @@
 import { body , validationResult } from "express-validator";
-
+import mongoose from "mongoose";
 
 export const validateRequest = (req , res , next) => {
     const errors = validationResult(req);
@@ -26,3 +26,17 @@ export const validateProduct = [
    
         validateRequest
 ]
+
+
+
+
+
+export const validateProductId = (req, res, next) => {
+  const productId = req.params.id;
+
+  if (! mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ message: "Invalid Product ID" });
+  }
+
+  next();
+};

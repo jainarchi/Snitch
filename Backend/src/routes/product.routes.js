@@ -1,8 +1,8 @@
 import { Router } from "express";
 import {authenticateSeller} from '../middlewares/auth.middleware.js'
-import { createProduct , getAllProductsBySeller , getProductDetails , getAllProducts } from "../controllers/product.controllers.js";
+import { createProduct , getAllProductsBySeller , getProductDetails , getAllProducts , deleteProduct } from "../controllers/product.controllers.js";
 import multer from "multer";
-import {validateProduct} from '../validation/product.validator.js'
+import {validateProduct , validateProductId} from '../validation/product.validator.js'
 
 
 
@@ -93,8 +93,17 @@ router.get('/' , getAllProducts)
  */
 
 
-router.get('/:id/details'  , getProductDetails)
+router.get('/:id/details' , validateProductId  , getProductDetails)
 
+
+
+/** 
+ * @route DELETE /api/products/:id
+ * @description Delete a product by seller
+ * @access Private
+*/
+
+router.delete('/:id',  authenticateSeller , validateProductId , deleteProduct)
 
 
 export default router

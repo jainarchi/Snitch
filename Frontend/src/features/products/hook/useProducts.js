@@ -1,4 +1,4 @@
-import { createProducts, getAllProductsBySeller, getProductDetails, getAllProducts } from "../services/products.api.js"
+import { createProducts, getAllProductsBySeller, getProductDetails, getAllProducts , deleteProduct } from "../services/products.api.js"
 import {
     setSellerProducts,
     addSellerProduct,
@@ -6,6 +6,7 @@ import {
     setLoading,
     setError,
     clearError,
+    removeProduct
 } from "../state/products.slice.js"
 import { useDispatch } from "react-redux"
 
@@ -50,6 +51,21 @@ export const useProducts = () => {
         }
     }
 
+// pessimistic update 
+    const handleDeleteProduct = async (productId) =>{
+
+        try{
+          const data = await deleteProduct(productId)
+          console.log(data.message)
+          dispatch(removeProduct(productId))
+
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+
+    
 
 
 
@@ -58,7 +74,8 @@ export const useProducts = () => {
         handleGetAllProductsBySeller,
         handleGetProductDetails,
         handleGetAllProducts,
-        clearError
+        clearError,
+        handleDeleteProduct
 
 
     }

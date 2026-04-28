@@ -74,6 +74,17 @@ export const productSlice = createSlice({
     setAllProducts: (state, action) => {
       state.allProducts = action.payload;
     },
+
+    removeProduct: (state, action) => {
+      state.sellerProducts = state.sellerProducts.filter(
+        (product) => product._id !== action.payload
+      );
+
+      state.allProducts = state.allProducts.filter(
+        (product) => product._id !== action.payload
+      );
+    },
+
   },
 });
 
@@ -84,6 +95,7 @@ export const {
   setLoading,
   setError,
   clearError,
+  removeProduct
 } = productSlice.actions;
 
 export default productSlice.reducer;

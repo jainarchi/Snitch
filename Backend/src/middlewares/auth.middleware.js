@@ -42,7 +42,7 @@ export const authenticateSeller = async (req , res ,next) =>{
         return res.status(403).json({message : 'Forbidden not the seller' , success : false })
       }
       
-      req.user = decoded
+      req.seller = decoded
       next()
     
    }catch(err){
