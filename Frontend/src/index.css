@@ -52,4 +52,18 @@
   --font-headline: "Manrope", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-label: "Inter", sans-serif;
+
+  /* ── Snitch editorial brand tokens ── */
+  --color-snitch-cream:    #fbf9f6;
+  --color-snitch-charcoal: #1b1c1a;
+  --color-snitch-gold:     #C9A96E;
+  --color-snitch-warm:     #4d463a;
+  --color-snitch-muted:    #7A6E63;
+  --color-snitch-faint:    #B5ADA3;
+  --color-snitch-border:   #d0c5b5;
+  --color-snitch-card:     #eae8e5;
+  --color-snitch-card-lo:  #e4e2df;
+
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans:  "Inter", system-ui, sans-serif;
 }
