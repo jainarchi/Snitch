@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {authenticateSeller} from '../middlewares/auth.middleware.js'
-import { createProduct , getAllProductsBySeller } from "../controllers/product.controllers.js";
+import { createProduct , getAllProductsBySeller , getProductDetails , getAllProducts } from "../controllers/product.controllers.js";
 import multer from "multer";
 import {validateProduct} from '../validation/product.validator.js'
 
@@ -68,7 +68,7 @@ router.post('/' ,
 
   /**
    * @route GET /api/products/seller
-   * @description Get all products by seller
+   * @description Get all products created by seller
    * @access Private
    */
 
@@ -76,6 +76,24 @@ router.post('/' ,
 router.get('/seller' , authenticateSeller , getAllProductsBySeller)    
 
 
+
+/**
+ * @route GET /api/products
+ * @description Get all products
+ * @access Public
+ */
+router.get('/' , getAllProducts)
+
+
+
+/**
+ * @route GET /api/products/:id/details
+ * @description get product details
+ * @access Public
+ */
+
+
+router.get('/:id/details'  , getProductDetails)
 
 
 

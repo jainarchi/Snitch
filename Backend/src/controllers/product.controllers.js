@@ -86,10 +86,67 @@ const getAllProductsBySeller = async (req , res) =>{
   }
 }
 
+const getProductDetails = async (req , res) =>{
+  const productId = req.params.id
+ 
+  try{
+  const product = await productModel.findById( productId )
+
+  if(!product){
+    return res.status(404).json({
+      success : false,
+      message : "Product not found"
+    })
+  }
+
+  res.status(200).json({
+    success : true,
+    message : "Product fetched successfully",
+    product
+  })
+
+  }catch(err){
+    console.log(err)
+    res.status(500).json({
+      success : false,
+      message : "Something went wrong"
+    })
+  }
+}
+
+
+const getAllProducts = async (req , res) =>{
+    try{
+      const products = await productModel.find()
+
+      if(!products){
+        return res.status(404).json({
+          success : false,
+          message : "Products not found"
+        })
+      }
+
+      res.status(200).json({
+        success : true,
+        message : "Products fetched successfully",
+        products
+      })
+
+    }catch(err){
+      console.log(err)
+      res.status(500).json({
+        success : false,
+        message : "Something went wrong"
+      })
+    }
+}
+
 
 
 
 export {
    createProduct , 
-   getAllProductsBySeller 
+   getAllProductsBySeller ,
+   getProductDetails,
+   getAllProducts
 };
