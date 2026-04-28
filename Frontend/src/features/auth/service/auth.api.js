@@ -34,7 +34,7 @@ export async function login ({email , password }){
 
 
 
-export function getMe (){
-    const response = authApi.get('/me');
+export async function  getMe (){
+    const response = await authApi.get('/me');
     return response.data
 }

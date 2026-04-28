@@ -34,10 +34,12 @@ export const useAuth = () => {
     try {
       dispatch(setLoading(true));
       const data = await getMe();
+      console.log(data)
       dispatch(setUser(data.user));
       
     } catch (err) {
       console.log(err);
+      
     } finally {
       dispatch(setLoading(false));
     }

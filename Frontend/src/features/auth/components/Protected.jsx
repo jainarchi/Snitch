@@ -1,26 +1,30 @@
 import React from 'react'
-import { Navigate } from 'react'
+import { Navigate } from 'react-router-dom'
 import {useSelector} from 'react-redux'
+import Loading from '../../shared/Loading.jsx'
 
 
-const Protected = (children , role ='buyer') => {
+const Protected = ({children , role ='buyer'}) => {
  
     const user = useSelector(state => state.auth.user)
     const loading = useSelector(state => state.auth.loading)
+    
+  
+     console.log(user , loading)
 
-
-     if(loading){
-      return <h1>Loading...</h1>
+     if(loading ){
+      return <Loading />
      }
 
 
      if( !user){
-        <Navigate to="/login" />
+       return <Navigate to="/login" replace />
      }
-
+    
+     console.log(user)
      
      if(user.role !== role){
-       < Navigate to="/"  />
+       return <Navigate to="/" replace  />
      }
 
 

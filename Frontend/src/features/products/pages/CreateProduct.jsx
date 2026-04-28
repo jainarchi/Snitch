@@ -96,7 +96,7 @@ const CreateProduct = () => {
                 <div className="max-w-6xl mx-auto px-8 lg:px-16 xl:px-24">
 
                     {/*    Top Bar    */}
-                    {/* <div className="pt-10 pb-0 flex items-center gap-5">
+                    <div className="pt-10 pb-0 flex items-center gap-5">
                         <button
                             onClick={() => navigate(-1)}
                             className="text-lg transition-colors duration-200 leading-none"
@@ -113,7 +113,7 @@ const CreateProduct = () => {
                         >
                             Snitch.
                         </span>
-                    </div> */}
+                    </div>
 
                     {/*    Page Header    */}
                     <div className="pt-4 pb-0">
