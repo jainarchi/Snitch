@@ -43,7 +43,8 @@ export const useProducts = () => {
             const data = await getAllProducts()
             dispatch(setAllProducts(data.products))
         } catch (err) {
-            dispatch(setError({ key: "allProducts", value: err?.response?.message || err?.message || "Something went wrong" }))
+            console.log(err.message)
+            dispatch(setError({ key: "allProducts", value: err?.response?.message || "Something went wrong" }))
         } finally {
             dispatch(setLoading({ key: "allProducts", value: false }))
         }

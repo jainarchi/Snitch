@@ -21,6 +21,7 @@ export async function getAllProductsBySeller (){
 }
 
 
+// get all products to show on home page
 export async function getAllProducts() {
     const response = await productApi.get('/')
     return response.data
@@ -29,6 +30,7 @@ export async function getAllProducts() {
 
 
 
+// get product details by id 
 
 export async function getProductDetails(productId){
     const response = await productApi.get(`/${productId}/details`)
