@@ -188,10 +188,101 @@ const deleteProduct = async (req, res) =>{
 }
 
 
+
+const createVariants = async (req , res) =>{
+    try{
+
+      const product = await productModel.findOne({
+        _id : req.params.id,
+        seller : req.seller.id
+      })
+
+      if(!product){
+        return res.status(404).json({
+          success : false,
+          message : "Product not found"
+        })
+      }
+
+
+      let images = [];
+
+      if(req.files?.length > 0){
+        images = await Promise.all(
+          req.files.map((file) =>
+            uploadFiles({
+              buffer: file.buffer,
+              fileName: file.originalname,
+            }),
+          ),
+        );
+      }
+     
+
+     const sizes = JSON.parse(req.body.sizes)
+     const {priceAmount , color} = req.body
+
+     // add images to imagesByColor
+      product.imagesByColor.set(
+        color,
+         images.map(img =>( {url : img.url}))
+      )
+
+      // create variants
+     sizes.forEach(s => {
+      product.variants.push({
+        size : s.size,
+        stock : s.stock,
+        price : {
+          amount : priceAmount || product.amount,
+          currency : product.currency
+        },
+        color 
+      })
+     })
+
+     await product.save()
+     
+
+     res.status(200).json({
+      success : true,
+      message : "Variants created successfully",
+      product
+     })
+    
+    }
+    catch(err){
+      console.log(err)
+      res.status(500).json({
+        success : false,
+        message : "Something went wrong"
+      })
+    }
+}
+
+
+
+
+
+
+
 export {
   createProduct,
   getAllProductsBySeller,
   getProductDetails,
   getAllProducts,
-  deleteProduct
+  deleteProduct,
+  createVariants
 };
+
+
+
+// Color: [Red]         - req.body.color
+// Price: [optional]    - req.body.price
+// Images: [upload]     - req.files
+
+// Sizes:                  - req.body.sizes  || min length 1 
+//   Size: [S]  Stock: [ ]
+//   Size: [M]  Stock: [ ]
+
+// [ + Add Size ]
