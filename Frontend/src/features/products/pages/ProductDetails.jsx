@@ -6,7 +6,7 @@ import Footer from '../../shared/Footer.jsx'
 import Loading from '../../shared/Loading.jsx'
 import BackButton from '../../shared/BackButton.jsx'
 
-/* ─── Helpers ─── */
+/*  Helpers  */
 const formatPrice = (price) => {
   if (!price) return '—'
   const sym =
@@ -27,7 +27,7 @@ const formatDate = (iso) => {
 
 
 
-/* ─── Action button ─── */
+/*  Action button  */
 const ActionButton = ({ label, variant, onClick, disabled = false }) => {
 
   const isPrimary = variant === 'primary'
@@ -51,7 +51,7 @@ const ActionButton = ({ label, variant, onClick, disabled = false }) => {
 
 
 
-/* ─── Thumbnail ─── */
+/*  Thumbnail  */
 const Thumbnail = React.memo(({ url, alt, isActive, onClick }) => {
 
 
@@ -152,7 +152,7 @@ const ProductDetails = () => {
 
 
 
-        {/* ── Not found ── */}
+        {/*  Not found  */}
         {!loading && !product && (
           <div className="flex flex-col items-center justify-center gap-4"
             style={{ minHeight: 'calc(100vh - 56px)' }}>
@@ -173,28 +173,15 @@ const ProductDetails = () => {
           <main className="max-w-[1400px] mx-auto
                            px-4 sm:px-8 lg:px-12 xl:px-16
                            py-8 sm:py-12 lg:py-16 pb-16 sm:pb-20 lg:pb-24">
-            {/*
-              Layout:
-              mobile   → single column (gallery then info)
-              lg 1024+ → two columns [gallery | info] at ~58/42
-            */}
+           
             <div className="flex flex-col gap-10 lg:flex-row  ">
 
-              {/* ══════════════════════════════
-                  LEFT — Image Gallery
-                  On desktop: thumbnail strip on
-                  the LEFT, main image on the RIGHT
-                  of the strip (flex-row).
-                  On mobile: main image on top,
-                  thumbnail strip below.
-              ══════════════════════════════ */}
               <div className="w-full flex flex-col sm:flex-row gap-3 ">
 
                 {/*  Thumbnail */}
                 {total > 1 && (
                   <div
-                    className="flex sm:flex-col gap-2 order-2 sm:order-1
-                               sm:w-[72px] lg:w-[80px] flex-shrink-0"
+                    className="flex sm:flex-col gap-2 order-2 sm:order-1 sm:w-[72px] lg:w-[80px] flex-shrink-0"
                   >
                     {images.map((img, idx) => (
                       <div key={img._id ?? idx} className="w-14 sm:w-full">
@@ -220,7 +207,7 @@ const ProductDetails = () => {
                     <img
                       src={activeImage}
                       alt={product.name}
-                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     />
                   ) : (
                     <div className="absolute inset-0 bg-[#e4e2df] flex items-center justify-center">

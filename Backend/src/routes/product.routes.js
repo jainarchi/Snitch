@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {authenticateSeller} from '../middlewares/auth.middleware.js'
-import { createProduct , getAllProductsBySeller , getProductDetails , getAllProducts , deleteProduct } from "../controllers/product.controllers.js";
+import { createProduct , getAllProductsBySeller , getProductDetails , getAllProducts , deleteProduct , createVariants } from "../controllers/product.controllers.js";
 import multer from "multer";
 import {validateProduct , validateProductId} from '../validation/product.validator.js'
 
@@ -104,6 +104,23 @@ router.get('/:id/details' , validateProductId  , getProductDetails)
 */
 
 router.delete('/:id',  authenticateSeller , validateProductId , deleteProduct)
+
+
+/**
+ * @route POST /api/products/:id/variants
+ * @description Create variants for a product
+ * @access Private
+ */
+
+router.post('/:id/variants', 
+   authenticateSeller ,
+   validateProductId , 
+   upload.array('images' , 5) , 
+   multerErrorHandler, 
+   createVariants)
+
+
+
 
 
 export default router
