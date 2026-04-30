@@ -51,7 +51,7 @@ const SectionRow = ({ title, description, children }) => (
   const navigate = useNavigate();
 
   const SellerName = useSelector(state => state.auth.user.fullname)
-const SellerEmail = useSelector(state => state.auth.user.email)
+  const SellerEmail = useSelector(state => state.auth.user.email)
 
 
   const [newPass, setNewPass]       = useState('');

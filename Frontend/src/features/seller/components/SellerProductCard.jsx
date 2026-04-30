@@ -86,7 +86,7 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
     : 'text-emerald-600';
 
   const handleView = () => {
-    if (productId) navigate(`/products/${productId}`);
+    if (productId) navigate(`/seller/dashboard/products/${productId}`);
   };
 
   const handleDeleteClick = () => {

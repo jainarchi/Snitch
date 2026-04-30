@@ -25,6 +25,7 @@ export const useProducts = () => {
     const handleGetAllProductsBySeller = async () => {
         const data = await getAllProductsBySeller()
         dispatch(setSellerProducts(data.products))
+        console.log(data.message)
     }
 
 
