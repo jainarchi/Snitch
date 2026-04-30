@@ -108,11 +108,11 @@ router.delete('/:id',  authenticateSeller , validateProductId , deleteProduct)
 
 /**
  * @route POST /api/products/:id/variants
- * @description Create variants for a product
+ * @description Create variants of a product
  * @access Private
  */
 
-router.post('/:id/variants', 
+router.post('/:id/variant', 
    authenticateSeller ,
    validateProductId , 
    upload.array('images' , 5) , 

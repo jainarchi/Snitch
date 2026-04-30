@@ -1,4 +1,4 @@
-import { createProducts, getAllProductsBySeller, getProductDetails, getAllProducts , deleteProduct } from "../services/products.api.js"
+import { createProducts, getAllProductsBySeller, getProductDetails, getAllProducts , deleteProduct , addProductVariant } from "../services/products.api.js"
 import {
     setSellerProducts,
     addSellerProduct,
@@ -65,6 +65,17 @@ export const useProducts = () => {
         }
     }
 
+
+    const handleAddProductVariant = async (productId , formData) => {
+        try{
+            const data = await addProductVariant(productId , formData)
+            console.log(data.product)
+
+        }catch(err){
+            console.log(err)
+
+        }
+    }
     
 
 
@@ -75,7 +86,8 @@ export const useProducts = () => {
         handleGetProductDetails,
         handleGetAllProducts,
         clearError,
-        handleDeleteProduct
+        handleDeleteProduct,
+        handleAddProductVariant
 
 
     }

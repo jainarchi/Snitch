@@ -1,55 +1,94 @@
-import {createBrowserRouter} from 'react-router-dom'
-import Register from '../features/auth/pages/Register'
-import Login from '../features/auth/pages/Login'
-import ProductDetails from '../features/products/pages/ProductDetails'
-import CreateProduct from '../features/products/pages/CreateProduct'
-import Protected from '../features/auth/components/Protected'
-import SellerDashboard from '../features/products/pages/SellerDashboard'
-import SellerProductDetails from '../features/products/pages/SellerProductDetails'
-import Home from '../features/products/pages/Home'
+import { createBrowserRouter } from "react-router-dom";
+import Register from "../features/auth/pages/Register";
+import Login from "../features/auth/pages/Login";
+import ProductDetails from "../features/products/pages/ProductDetails";
+import CreateProduct from "../features/products/pages/CreateProduct";
+import Protected from "../features/auth/components/Protected";
+import Home from "../features/products/pages/Home";
 
-
+import SellerDashboard from "../features/seller/layout/Dashboard";
+import SellerDashboardOverview from "../features/seller/pages/Overview";
+import SellerProductDetails from "../features/seller/pages/ProductDetails";
+import SellerSetting from "../features/seller/pages/Setting";
+import SellerRevenue from "../features/seller/pages/Revenue";
+import SellerProducts from "../features/seller/pages/Products";
+import SellerOrder from "../features/seller/pages/Order";
+import { Navigate } from "react-router-dom";
 
 export const appRouter = createBrowserRouter([
     {
-        path : '/' ,
-        element : <Home />
+        path: "/",
+        element: <Home />,
     },
     {
-        path : '/login' ,
-        element : <Login />
+        path: "/login",
+        element: <Login />,
     },
     {
-        path : '/register' ,
-        element : <Register />  
+        path: "/register",
+        element: <Register />,
     },
     {
-        path : '/products/:productId',
-        element : <ProductDetails />
-
+        path: "/products/:productId",
+        element: <ProductDetails />,
     },
     {
-        path : '/seller',
-        children : [
+        path: "/seller",
+        children: [
             {
-                path: '/seller/create-product',
-                element: <Protected role="seller" >
-                            <CreateProduct />
-                        </Protected>
+                index: true,
+                element: <Navigate to="dashboard" replace />
             },
-            { // show all products cart created by seller
-                path:'/seller/dashboard',
-                element: <Protected role="seller" >
-                            <SellerDashboard />
-                        </Protected>
+            {
+                path: "create-product",
+                element: <Protected role="seller">
+                    <CreateProduct />
+                </Protected>
             },
-            { // show product detail and have options to edit for seller
-                path: '/seller/products/:productId',
-                element: <Protected role="seller" >
-                            <SellerProductDetails />
-                        </Protected>
-            }
-        ]
-       
+            {
+                path: "dashboard",
+                element: <Protected role="seller">
+                    <SellerDashboard />
+                </Protected>,
+
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to="overview" replace />
+                    },
+                    {
+                        path: "overview",
+                        element: <SellerDashboardOverview />,
+                    },
+                    {
+                        path: "products/:productId",
+                        element: <SellerProductDetails />,
+                    },
+                    {
+                        path: "settings",
+                        element: <SellerSetting />,
+                    },
+                    {
+                        path: "revenue",
+                        element: <SellerRevenue />,
+                    },
+                    {
+                        path: "products",
+                        element: <SellerProducts />,
+                    },
+                    {
+                        path: "orders",
+                        element: <SellerOrder />,
+                    },
+                ],
+            },
+        ],
+    },
+
+
+
+    {
+        path: "*",
+        element: <Navigate to="/" replace />
     }
-])
+]);

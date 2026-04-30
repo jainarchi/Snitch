@@ -43,6 +43,16 @@ export async function deleteProduct (productId){
     return response.data
 }
 
+
+export async function addProductVariant(productId , formData){
+    const response = await productApi.post(`/${productId}/variant` , formData)
+    return response.data
+}
+
+
+
+
+
 /*
 
   more varient of product
