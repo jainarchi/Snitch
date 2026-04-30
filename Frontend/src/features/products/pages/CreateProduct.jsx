@@ -62,13 +62,13 @@ const CreateProduct = () => {
         setIsSubmitting(true);
         try {
             const data = new FormData();
-            data.append('title', formData.title);
+            data.append('name', formData.title);
             data.append('description', formData.description);
             data.append('priceAmount', formData.priceAmount);
             data.append('priceCurrency', formData.priceCurrency);
             images.forEach(img => data.append('images', img.file));
             await handleCreateProduct(data);
-            navigate('/');
+            navigate('/seller/dashboard/products');
         } catch (err) {
             console.error('Failed to create product', err);
         } finally {
