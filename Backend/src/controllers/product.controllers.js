@@ -4,7 +4,7 @@ import { uploadFiles } from "../services/image.service.js";
 
 const createProduct = async (req, res) => {
   try {
-    console.log(req.files);
+    const {title , description , priceAmount , priceCurrency , color , sizes} = req.body
 
 
     if (!req.files || req.files.length === 0) {
@@ -24,21 +24,38 @@ const createProduct = async (req, res) => {
       ),
     );
 
-    console.log(images)
-    const { name, description, priceAmount, priceCurrency } = req.body;
-
-    const product = await productModel.create({
+    const product = await productModel({
       seller: req.seller.id,
-      name,
+      title,
       description,
-      price: {
-        amount: Number(priceAmount),
-        currency: priceCurrency,
-      },
-      images,
+      price : {
+        amount: priceAmount,
+        currency : priceCurrency,
+      }
+     
     });
 
+    
+     // add images to imagesByColor
+      product.imagesByColor.set(
+        color,
+         images.map(img =>( {url : img.url}))
+      )
 
+      // create variants
+     sizes.forEach(s => {
+      product.variants.push({
+        size : s.size,
+        stock : s.stock,
+        price : {
+          amount : Number(priceAmount) || product.price.amount,
+          currency : product.currency
+        },
+        color 
+      })
+     })
+
+     await product.save();
 
 
     res.status(201).json({
@@ -218,8 +235,7 @@ const createVariants = async (req , res) =>{
         );
       }
      
-
-    //  const sizes = JSON.parse(req.body.sizes)
+      
      const {priceAmount , color , sizes} = req.body
 
      // add images to imagesByColor

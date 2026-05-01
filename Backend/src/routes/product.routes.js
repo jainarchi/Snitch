@@ -2,7 +2,7 @@ import { Router } from "express";
 import {authenticateSeller} from '../middlewares/auth.middleware.js'
 import { createProduct , getAllProductsBySeller , getProductDetails , getAllProducts , deleteProduct , createVariants } from "../controllers/product.controllers.js";
 import multer from "multer";
-import {validateProduct , validateProductId ,parseSizes ,  createVariantValidation} from '../validation/product.validator.js'
+import {validateProduct , validateProductId ,parseSizes ,  VariantValidation} from '../validation/product.validator.js'
 
 
 
@@ -60,6 +60,7 @@ router.post('/' ,
     authenticateSeller,
     upload.array('images' , 5), 
     multerErrorHandler,           // handle size/count/type errors
+    parseSizes ,
     validateProduct ,   
     createProduct 
   )
@@ -117,7 +118,7 @@ router.post('/:id/variant',
    upload.array('images' , 5) , 
    multerErrorHandler, 
    parseSizes ,
-   createVariantValidation ,
+   VariantValidation ,
    createVariants)
 
 

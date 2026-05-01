@@ -1,43 +1,22 @@
-import { body , param, validationResult } from "express-validator";
+import { body, param, validationResult } from "express-validator";
 import mongoose from "mongoose";
 
-export const validateRequest = (req , res , next) => {
-    const errors = validationResult(req);
-    if(!errors.isEmpty())
-        return res.status(400).json({ errors: errors.array() }); 
-    next()
+export const validateRequest = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return res.status(400).json({ errors: errors.array() });
+  next()
 }
 
-export const validateProduct = [
-    body("name")
-        .trim()
-        .notEmpty().withMessage("Product name is required")
-        .isLength({ min: 3 }).withMessage("Product name must be at least 3 characters long"),
-    body("description")
-        .trim()
-        .notEmpty().withMessage("Product description is required")
-        .isLength({ min: 10 }).withMessage("Product description must be at least 10 characters long"),
-    body("priceAmount")
-        .notEmpty().withMessage("Product price is required")
-        .isNumeric().withMessage("Product price must be a number"),
-    body("priceCurrency")
-        .notEmpty().withMessage("Product currency is required")
-        .isLength({ min: 3 }).withMessage("Product currency must be at least 3 characters long"),   
-   
-        validateRequest
-]
 
 
 
+export const validateProductId = [
 
+  param('id').isMongoId().withMessage("Invalid product ID format"),
 
-export const validateProductId = (req, res, next) => {
-  const productId = req.params.id;
-
-   param('id').isMongoId().withMessage("Invalid product ID format");
-
-  next();
-};
+  validateRequest
+];
 
 
 
@@ -56,22 +35,94 @@ export const parseSizes = (req, res, next) => {
 
 
 
-export const createVariantValidation = [
-  param("id")
-    .isMongoId()
-    .withMessage("Invalid product ID"),
-
-  // color
-  body("color")
+const colorAndSizesValidation = [
+ //color
+   body("color")
     .trim()
     .notEmpty().withMessage("Color is required")
     .isLength({ min: 3, max: 20 })
     .withMessage("Color must be 3–20 characters"),
 
+    //sizes 
+   body("sizes")
+    .isArray({ min: 1 })
+    .withMessage("At least one size is required"),
+
+  body("sizes.*.size")
+    .trim()
+    .notEmpty()
+    .withMessage("Size is required")
+    .isLength({ max:5 })
+    .withMessage("Size too long"),
+
+  body("sizes.*.stock")
+    .notEmpty()
+    .withMessage("Stock is required")
+    .isInt({ min: 0 })
+    .withMessage("Stock must be >= 0"),
+
+  //   optional: total stock consistency check
+
+  body("sizes").custom((sizes, { req }) => {
+    if (req.body.stock) {
+      const total = sizes.reduce((sum, s) => sum + Number(s.stock || 0), 0);
+      if (total !== Number(req.body.stock)) {
+        throw new Error("Total size stock must match overall stock");
+      }
+    }
+    return true;
+  })
+]
+
+
+
+
+export const validateProduct = [
+
+    
+  body("title")
+    .trim()
+    .notEmpty().withMessage("Product title is required")
+    .isLength({ min: 3 }).withMessage("Product title must be at least 3 characters long"),
+
+  body("description")
+    .trim()
+    .notEmpty().withMessage("Product description is required")
+    .isLength({ min: 10 }).withMessage("Product description must be at least 10 characters long"),
+
+  body("priceAmount")
+    .notEmpty().withMessage("Product price is required")
+    .isNumeric().withMessage("Product price must be a number")
+    .isInt({ min: 0 })
+    .withMessage("Price must be a valid positive number"),
+
+
+  body("priceCurrency")
+    .notEmpty().withMessage("Product currency is required")
+    .isLength({ min: 3 }).withMessage("Product currency must be 3 characters long"),
+
+ 
+    ...colorAndSizesValidation ,
+
+
+  validateRequest
+]
+
+
+
+
+
+
+export const VariantValidation = [
+  param("id")
+    .isMongoId()
+    .withMessage("Invalid product ID"),
+ 
+
   // price
   body("priceAmount")
     .optional()
-    .isFloat({ min: 0 })
+    .isInt({ min: 0 })
     .withMessage("Price must be a valid positive number"),
 
   // images (if you send URLs)
@@ -85,34 +136,8 @@ export const createVariantValidation = [
     .isURL()
     .withMessage("Each image must be a valid URL"),
 
-  body("sizes")
-    .isArray({ min: 1 })
-    .withMessage("At least one size is required"),
 
-  body("sizes.*.size")
-    .trim()
-    .notEmpty()
-    .withMessage("Size is required")
-    .isLength({ max: 10 })
-    .withMessage("Size too long"),
-
-  body("sizes.*.stock")
-    .notEmpty()
-    .withMessage("Stock is required")
-    .isInt({ min: 0 })
-    .withMessage("Stock must be >= 0"),
-
-//   optional: total stock consistency check
-
-  body("sizes").custom((sizes, { req }) => {
-    if (req.body.stock) {
-      const total = sizes.reduce((sum, s) => sum + Number(s.stock || 0), 0);
-      if (total !== Number(req.body.stock)) {
-        throw new Error("Total size stock must match overall stock");
-      }
-    }
-    return true;
-  }),
+    ...colorAndSizesValidation , 
 
   validateRequest
 ];

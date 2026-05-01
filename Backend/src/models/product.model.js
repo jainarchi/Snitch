@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
     required: true
   },
 
-  name: {
+  title: {
     type: String,
     required: true,
     trim: true
@@ -25,15 +25,6 @@ const productSchema = new mongoose.Schema({
     required: true
   },
 
-  images: [
-    {
-      url: {
-        type: String,
-        required: true,
-      },
-      _id: false
-    }
-  ],
 
   //  color-wise images for variants
   imagesByColor: {
@@ -84,7 +75,7 @@ const productSchema = new mongoose.Schema({
 
 
 productSchema.index(
-  { "variant.color": 1, "variant.size": 1 },
+  { "variants.color": 1, "variants.size": 1 },
   { unique: true }
 );
 
