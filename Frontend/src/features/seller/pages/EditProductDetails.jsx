@@ -7,7 +7,7 @@ import Add_Variant from '../../products/components/AddVariant';
 
 
 
-const AddVariant = () => {
+const EditProductDetails = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { handleGetProductDetails, handleAddProductVariant } = useProducts();
@@ -174,4 +174,4 @@ const AddVariant = () => {
   );
 };
 
-export default AddVariant;
+export default EditProductDetails;

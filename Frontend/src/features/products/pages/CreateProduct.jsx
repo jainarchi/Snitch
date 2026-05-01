@@ -1,7 +1,9 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { useProducts } from '../hook/useProducts.js'
 import { useNavigate } from 'react-router';
-
+import ProductImageUploader from '../components/ProductImageUploader.jsx';
+import AddVariant from '../components/AddVariant.jsx';
+import { createProductSchema } from '../validations/VariantValidationSchema.js';
 
 const CURRENCIES = ['INR', 'USD', 'EUR', 'GBP'];
 const MAX_IMAGES = 5;
@@ -17,64 +19,63 @@ const CreateProduct = () => {
         priceCurrency: 'INR',
     });
     const [images, setImages] = useState([]);
-    const [isDragging, setIsDragging] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const fileInputRef = useRef(null);
+
+    const [variantData, setVariantData] = useState({
+        color: '',
+    });
+    const [sizes, setSizes] = useState([{ size: '', stock: '' }]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const addFiles = (files) => {
-        const remaining = MAX_IMAGES - images.length;
-        if (remaining <= 0) return;
-        const toAdd = Array.from(files).slice(0, remaining);
-        const newImages = toAdd.map(file => ({ file, preview: URL.createObjectURL(file) }));
-        setImages(prev => [...prev, ...newImages]);
-    };
-
-    const handleFileChange = (e) => {
-        addFiles(e.target.files);
-        e.target.value = '';
-    };
-
-    const handleDrop = useCallback((e) => {
-        e.preventDefault();
-        setIsDragging(false);
-        if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
-    }, [images]);
-
-    const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
-    const handleDragLeave = () => setIsDragging(false);
-
-    const removeImage = (index) => {
-        setImages(prev => {
-            const updated = [...prev];
-            URL.revokeObjectURL(updated[index].preview);
-            updated.splice(index, 1);
-            return updated;
-        });
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const data = new FormData();
-            data.append('name', formData.title);
-            data.append('description', formData.description);
-            data.append('priceAmount', formData.priceAmount);
-            data.append('priceCurrency', formData.priceCurrency);
-            images.forEach(img => data.append('images', img.file));
-            await handleCreateProduct(data);
+
+            const data = {
+                title: formData.title,
+                description: formData.description,
+                priceAmount: formData.priceAmount,
+                priceCurrency: formData.priceCurrency,
+                color: variantData.color,
+                sizes,
+                images
+
+            }
+
+            const paresedData = createProductSchema.parse(data)
+
+            const form_data = new FormData();
+            form_data.append('title', paresedData.title);
+            form_data.append('description', paresedData.description);
+            form_data.append('priceAmount', paresedData.priceAmount);
+            form_data.append('priceCurrency', paresedData.priceCurrency);
+            form_data.append('color', paresedData.color);
+            form_data.append('sizes', JSON.stringify(paresedData.sizes));
+
+            images.forEach(img => form_data.append('images', img.file));
+            await handleCreateProduct(form_data);
+
             navigate('/seller/dashboard/products');
+
         } catch (err) {
-            console.error('Failed to create product', err);
+            if (err.name === "ZodError") {
+                const messages = err.issues.map(e => e.message);
+                alert(messages.join("\n"));
+                return;
+            }
+
         } finally {
             setIsSubmitting(false);
         }
     };
+
+
 
     const inputClass = "w-full bg-transparent outline-none py-4 text-sm transition-colors duration-300 placeholder:text-[#d0c5b5]";
     const inputStyle = { color: '#1b1c1a', borderBottom: '1px solid #d0c5b5', fontFamily: "'Inter', sans-serif" };
@@ -226,92 +227,21 @@ const CreateProduct = () => {
                                         </div>
                                     </div>
                                 </div>
+
+                                <AddVariant
+                                    newProduct={true}
+                                    variantData={variantData}
+                                    setVariantData={setVariantData}
+                                    sizes={sizes}
+                                    setSizes={setSizes}
+                                />
                             </div>
 
                             {/*    RIGHT COLUMN: Images    */}
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-[10px] uppercase tracking-[0.2em] font-medium" style={{ color: '#7A6E63' }}>
-                                        Images
-                                    </label>
-                                    <span className="text-[10px]" style={{ color: '#B5ADA3' }}>
-                                        {images.length}/{MAX_IMAGES}
-                                    </span>
-                                </div>
-
-                                {/* Drop Zone */}
-                                {images.length < MAX_IMAGES && (
-                                    <div
-                                        onDrop={handleDrop}
-                                        onDragOver={handleDragOver}
-                                        onDragLeave={handleDragLeave}
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="border border-dashed px-8 py-14 lg:py-20 flex flex-col items-center gap-4 cursor-pointer transition-all duration-300"
-                                        style={{
-                                            borderColor: isDragging ? '#C9A96E' : '#d0c5b5',
-                                            backgroundColor: isDragging ? 'rgba(201,169,110,0.04)' : 'transparent'
-                                        }}
-                                    >
-                                        {/* Upload icon */}
-                                        <div
-                                            className="w-10 h-10 flex items-center justify-center border transition-colors duration-300"
-                                            style={{ borderColor: isDragging ? '#C9A96E' : '#d0c5b5', color: isDragging ? '#C9A96E' : '#B5ADA3' }}
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-sm leading-relaxed" style={{ color: '#7A6E63' }}>
-                                                Drop images here or{' '}
-                                                <span style={{ color: '#C9A96E', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
-                                                    tap to upload
-                                                </span>
-                                            </p>
-                                            <p className="text-[10px] uppercase tracking-[0.15em] mt-2" style={{ color: '#B5ADA3' }}>
-                                                Up to {MAX_IMAGES} images
-                                            </p>
-                                        </div>
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            accept="image/*"
-                                            multiple
-                                            onChange={handleFileChange}
-                                            className="hidden"
-                                        />
-                                    </div>
-                                )}
-
-                                {/* Image Previews */}
-                                {images.length > 0 && (
-                                    <div className="grid grid-cols-3  gap-2 mt-1">
-                                        {images.map((img, index) => (
-                                            <div
-                                                key={index}
-                                                className="relative aspect-square overflow-hidden group"
-                                                style={{ backgroundColor: '#eae8e5' }}
-                                            >
-                                                <img
-                                                    src={img.preview}
-                                                    alt={`Preview ${index + 1}`}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                                {/* Remove overlay */}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeImage(index)}
-                                                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs font-medium tracking-widest uppercase"
-                                                    style={{ backgroundColor: 'rgba(27,24,20,0.55)', color: '#fbf9f6' }}
-                                                    aria-label={`Remove image ${index + 1}`}
-                                                >
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                            <ProductImageUploader
+                                images={images}
+                                setImages={setImages}
+                            />
                         </div>
 
                         {/*    Submit Button    */}

@@ -133,7 +133,7 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
           style={{ opacity: imgHovered ? 1 : 0 }}
         >
           <span className="font-label text-[0.6rem] tracking-[0.18em] uppercase text-white bg-snitch-charcoal/20 backdrop-blur-sm px-4 py-2 ">
-            View Details
+            Add Variant
           </span>
         </div>
 
@@ -179,10 +179,9 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
           {/* View button */}
           <button
             onClick={handleView}
-            className="flex items-center gap-1.5 font-label text-[0.65rem] tracking-[0.1em] uppercase text-snitch-warm hover:text-snitch-gold bg-transparent border-none p-0 cursor-pointer transition-colors duration-300"
+            className="font-label text-[0.65rem] tracking-[0.1em] uppercase text-snitch-warm hover:text-snitch-gold bg-transparent border-none p-0 cursor-pointer transition-colors duration-300"
           >
-            <EyeIcon />
-            <span>Details</span>
+           Add Variant
           </button>
 
           {/* Delete button — two-tap confirm */}

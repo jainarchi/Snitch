@@ -8,7 +8,7 @@ import Home from "../features/products/pages/Home";
 
 import SellerDashboard from "../features/seller/layout/Dashboard";
 import SellerDashboardOverview from "../features/seller/pages/Overview";
-import ProductAddVariant from "../features/seller/pages/AddVariant";
+import EditProductDetails from "../features/seller/pages/EditProductDetails";
 import SellerSetting from "../features/seller/pages/Setting";
 import SellerRevenue from "../features/seller/pages/Revenue";
 import SellerProducts from "../features/seller/pages/Products";
@@ -62,7 +62,7 @@ export const appRouter = createBrowserRouter([
                     },
                     {
                         path: "products/:productId",
-                        element: <ProductAddVariant />,
+                        element: <EditProductDetails />,
                     },
                     {
                         path: "settings",
