@@ -2,7 +2,7 @@ import { Router } from "express";
 import {authenticateSeller} from '../middlewares/auth.middleware.js'
 import { createProduct , getAllProductsBySeller , getProductDetails , getAllProducts , deleteProduct , createVariants } from "../controllers/product.controllers.js";
 import multer from "multer";
-import {validateProduct , validateProductId} from '../validation/product.validator.js'
+import {validateProduct , validateProductId ,parseSizes ,  createVariantValidation} from '../validation/product.validator.js'
 
 
 
@@ -114,9 +114,10 @@ router.delete('/:id',  authenticateSeller , validateProductId , deleteProduct)
 
 router.post('/:id/variant', 
    authenticateSeller ,
-   validateProductId , 
    upload.array('images' , 5) , 
    multerErrorHandler, 
+   parseSizes ,
+   createVariantValidation ,
    createVariants)
 
 

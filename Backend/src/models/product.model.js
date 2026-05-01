@@ -56,12 +56,12 @@ const productSchema = new mongoose.Schema({
     {
       color: {
         type: String,
-        required: true
+        required: [true , 'color of varient is required']
       },
 
       size: {
         type: String,
-        required: true
+        required: [true , 'size of varient is required']
       },
 
       stock: {

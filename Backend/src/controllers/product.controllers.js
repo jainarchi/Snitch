@@ -219,8 +219,8 @@ const createVariants = async (req , res) =>{
       }
      
 
-     const sizes = JSON.parse(req.body.sizes)
-     const {priceAmount , color} = req.body
+    //  const sizes = JSON.parse(req.body.sizes)
+     const {priceAmount , color , sizes} = req.body
 
      // add images to imagesByColor
       product.imagesByColor.set(
@@ -234,7 +234,7 @@ const createVariants = async (req , res) =>{
         size : s.size,
         stock : s.stock,
         price : {
-          amount : priceAmount || product.amount,
+          amount : Number(priceAmount) || product.price.amount,
           currency : product.currency
         },
         color 

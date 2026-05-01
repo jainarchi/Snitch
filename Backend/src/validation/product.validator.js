@@ -1,4 +1,4 @@
-import { body , validationResult } from "express-validator";
+import { body , param, validationResult } from "express-validator";
 import mongoose from "mongoose";
 
 export const validateRequest = (req , res , next) => {
@@ -34,9 +34,85 @@ export const validateProduct = [
 export const validateProductId = (req, res, next) => {
   const productId = req.params.id;
 
-  if (! mongoose.Types.ObjectId.isValid(productId)) {
-    return res.status(400).json({ message: "Invalid Product ID" });
-  }
+   param('id').isMongoId().withMessage("Invalid product ID format");
 
   next();
 };
+
+
+
+
+// optional parser (only if FormData)
+export const parseSizes = (req, res, next) => {
+  if (req.body.sizes && typeof req.body.sizes === "string") {
+    try {
+      req.body.sizes = JSON.parse(req.body.sizes);
+    } catch (err) {
+      return res.status(400).json({ message: "Invalid sizes format" });
+    }
+  }
+  next();
+};
+
+
+
+export const createVariantValidation = [
+  param("id")
+    .isMongoId()
+    .withMessage("Invalid product ID"),
+
+  // color
+  body("color")
+    .trim()
+    .notEmpty().withMessage("Color is required")
+    .isLength({ min: 3, max: 20 })
+    .withMessage("Color must be 3–20 characters"),
+
+  // price
+  body("priceAmount")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Price must be a valid positive number"),
+
+  // images (if you send URLs)
+  body("images")
+    .optional()
+    .isArray()
+    .withMessage("Images must be an array"),
+
+  body("images.*")
+    .optional()
+    .isURL()
+    .withMessage("Each image must be a valid URL"),
+
+  body("sizes")
+    .isArray({ min: 1 })
+    .withMessage("At least one size is required"),
+
+  body("sizes.*.size")
+    .trim()
+    .notEmpty()
+    .withMessage("Size is required")
+    .isLength({ max: 10 })
+    .withMessage("Size too long"),
+
+  body("sizes.*.stock")
+    .notEmpty()
+    .withMessage("Stock is required")
+    .isInt({ min: 0 })
+    .withMessage("Stock must be >= 0"),
+
+//   optional: total stock consistency check
+
+  body("sizes").custom((sizes, { req }) => {
+    if (req.body.stock) {
+      const total = sizes.reduce((sum, s) => sum + Number(s.stock || 0), 0);
+      if (total !== Number(req.body.stock)) {
+        throw new Error("Total size stock must match overall stock");
+      }
+    }
+    return true;
+  }),
+
+  validateRequest
+];
