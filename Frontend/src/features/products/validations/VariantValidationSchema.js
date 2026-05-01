@@ -1,0 +1,64 @@
+import { z } from "zod";
+
+export const variantSchema = z.object({
+
+    color: z
+        .string()
+        .trim()
+        .min(1, "Color is required")
+        .min(3, "Color must be at least 3 characters"),
+
+    priceAmount: z
+        .string()
+        .optional()
+        .refine(val => !val || !isNaN(val), {
+            message: "Price must be a number"
+        }),
+
+    sizes: z
+        .array(
+            z.object({
+                size: z
+                    .string()
+                    .trim()
+                    .min(1, "Size is required"),
+
+                stock: z
+                    .string()
+                    .min(1, "Stock is required")
+                    .refine(val => !isNaN(val) && Number(val) >= 0, {
+                        message: "Stock must be >= 0"
+                    })
+            })
+        )
+        .min(1, "At least one size is required")
+        .refine((sizes) => {
+            const seen = new Set();
+            for (let s of sizes) {
+                if (seen.has(s.size)) return false;
+                seen.add(s.size);
+            }
+            return true;
+        }, {
+            message: "Duplicate sizes not allowed"
+        }),
+
+
+    images: z
+        .array(
+            z.object({
+                file: z
+                    .instanceof(File)
+                    .refine(
+                        (file) =>
+                            ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+                        "Only JPG, PNG, WEBP files allowed"
+                    )
+                    .refine(
+                        (file) => file.size <= 5 * 1024 * 1024,
+                        "Max file size is 5MB"
+                    )
+            })
+        )
+        .optional()
+});
