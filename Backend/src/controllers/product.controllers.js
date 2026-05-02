@@ -4,7 +4,7 @@ import { uploadFiles } from "../services/image.service.js";
 
 const createProduct = async (req, res) => {
   try {
-    const {title , description , priceAmount , priceCurrency , color , sizes} = req.body
+    const { title, description, priceAmount, priceCurrency, color, sizes } = req.body
 
 
     if (!req.files || req.files.length === 0) {
@@ -28,34 +28,34 @@ const createProduct = async (req, res) => {
       seller: req.seller.id,
       title,
       description,
-      price : {
+      price: {
         amount: priceAmount,
-        currency : priceCurrency,
+        currency: priceCurrency,
       }
-     
+
     });
 
-    
-     // add images to imagesByColor
-      product.imagesByColor.set(
-        color,
-         images.map(img =>( {url : img.url}))
-      )
 
-      // create variants
-     sizes.forEach(s => {
+    // add images to imagesByColor
+    product.imagesByColor.set(
+      color,
+      images.map(img => ({ url: img.url }))
+    )
+
+    // create variants
+    sizes.forEach(s => {
       product.variants.push({
-        size : s.size,
-        stock : s.stock,
-        price : {
-          amount : Number(priceAmount) || product.price.amount,
-          currency : product.currency
+        size: s.size,
+        stock: s.stock,
+        price: {
+          amount: Number(priceAmount) || product.price.amount,
+          currency: product.currency
         },
-        color 
+        color
       })
-     })
+    })
 
-     await product.save();
+    await product.save();
 
 
     res.status(201).json({
@@ -80,14 +80,25 @@ const createProduct = async (req, res) => {
 
 const getAllProductsBySeller = async (req, res) => {
   try {
-    const products = await productModel.find({ seller: req.seller.id })
+    const allProducts = await productModel.find({ seller: req.seller.id }).lean()
 
-    if (!products || products.length === 0) {
+    if (!allProducts || allProducts.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No products found"
       })
     }
+
+
+    const products = allProducts.map(p => {
+      const totalStock = p.variants.reduce((acc, v) => { return acc + v.stock }, 0)
+
+      return {
+        ...p,
+        totalStock
+
+      }
+    })
 
     res.status(200).json({
       success: true,
@@ -137,10 +148,25 @@ const getAllProducts = async (req, res) => {
     const products = await productModel.aggregate([
       {
         $project: {
-          name: 1,
+          title: 1,
           price: 1,
-          category: 1,
-          image: { $arrayElemAt: ["$images.url", 0] }
+
+          image: {
+            $let: {
+              vars: {
+                firstColor: {
+                  $arrayElemAt: [
+                    { $objectToArray: "$imagesByColor" },
+                    0
+                  ]
+                }
+              },
+              in: {
+                $arrayElemAt: ["$$firstColor.v.url", 0]
+              }
+            }
+
+          }
         }
       }
     ])
@@ -171,109 +197,113 @@ const getAllProducts = async (req, res) => {
 
 
 // delete product by seller controller 
-const deleteProduct = async (req, res) =>{
-  try{
-   const productId = req.params.id
+const deleteProduct = async (req, res) => {
+  try {
+    const productId = req.params.id
 
-   const product = await productModel.findOneAndDelete({
-    _id : productId,
-    seller : req.seller.id
-   })
-
-
-   if(!product){
-    return res.status(404).json({
-      success : false,
-      message : "Product not found"
+    const product = await productModel.findOneAndDelete({
+      _id: productId,
+      seller: req.seller.id
     })
-   }
 
-   res.status(200).json({
-    success : true,
-    message : "Product deleted successfully"
-   })
- }
 
- catch(err){
-  console.log(err)
-  res.status(500).json({
-    success : false,
-    message : "Something went wrong"
-  })
- }
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found"
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Product deleted successfully"
+    })
+  }
+
+  catch (err) {
+    console.log(err)
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong"
+    })
+  }
 
 }
 
 
 
-const createVariants = async (req , res) =>{
-    try{
+const createVariants = async (req, res) => {
+  try {
 
-      const product = await productModel.findOne({
-        _id : req.params.id,
-        seller : req.seller.id
+    const product = await productModel.findOne({
+      _id: req.params.id,
+      seller: req.seller.id
+    })
+
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found"
       })
-
-      if(!product){
-        return res.status(404).json({
-          success : false,
-          message : "Product not found"
-        })
-      }
+    }
 
 
-      let images = [];
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one image is required",
+      });
+    }
 
-      if(req.files?.length > 0){
-        images = await Promise.all(
-          req.files.map((file) =>
-            uploadFiles({
-              buffer: file.buffer,
-              fileName: file.originalname,
-            }),
-          ),
-        );
-      }
-     
-      
-     const {priceAmount , color , sizes} = req.body
 
-     // add images to imagesByColor
-      product.imagesByColor.set(
-        color,
-         images.map(img =>( {url : img.url}))
-      )
+    const images = await Promise.all(
+      req.files.map((file) =>
+        uploadFiles({
+          buffer: file.buffer,
+          fileName: file.originalname,
+        }),
+      ),
+    );
 
-      // create variants
-     sizes.forEach(s => {
+    const { priceAmount, color, sizes } = req.body
+
+    // add images to imagesByColor
+    product.imagesByColor.set(
+      color,
+      images.map(img => ({ url: img.url }))
+    )
+
+    // create variants
+    sizes.forEach(s => {
       product.variants.push({
-        size : s.size,
-        stock : s.stock,
-        price : {
-          amount : Number(priceAmount) || product.price.amount,
-          currency : product.currency
+        size: s.size,
+        stock: s.stock,
+        price: {
+          amount: Number(priceAmount) || product.price.amount,
+          currency: product.currency
         },
-        color 
+        color
       })
-     })
+    })
 
-     await product.save()
-     
+    await product.save()
 
-     res.status(200).json({
-      success : true,
-      message : "Variants created successfully",
+
+    res.status(200).json({
+      success: true,
+      message: "Variants created successfully",
       product
-     })
-    
-    }
-    catch(err){
-      console.log(err)
-      res.status(500).json({
-        success : false,
-        message : "Something went wrong"
-      })
-    }
+    })
+
+  }
+  catch (err) {
+    console.log(err)
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong"
+    })
+  }
 }
 
 
@@ -297,7 +327,7 @@ export {
 // Price: [optional]    - req.body.price
 // Images: [upload]     - req.files
 
-// Sizes:                  - req.body.sizes  || min length 1 
+// Sizes:                  - req.body.sizes  || min length 1
 //   Size: [S]  Stock: [ ]
 //   Size: [M]  Stock: [ ]
 

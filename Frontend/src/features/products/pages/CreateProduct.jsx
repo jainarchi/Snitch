@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useProducts } from '../hook/useProducts.js'
 import { useNavigate } from 'react-router';
 import ProductImageUploader from '../components/ProductImageUploader.jsx';
 import AddVariant from '../components/AddVariant.jsx';
-import { createProductSchema } from '../validations/VariantValidationSchema.js';
+import { createProductSchema } from '../validations/productValidation.js';
 
 const CURRENCIES = ['INR', 'USD', 'EUR', 'GBP'];
 const MAX_IMAGES = 5;

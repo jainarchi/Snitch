@@ -71,11 +71,13 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
   const [confirmDelete, setConfirmDelete] = useState(false);
     const [confirm, setConfirm] = useState(false);
 
+   const firstKey = Object.keys(product.imagesByColor)[0];
+
   const productId  = product?._id;
-  const name       = product?.name
+  const title       = product?.title
   const price      = product?.price;
-  const stock      = product?.stock;
-  const image      = product?.images?.[0].url ?? null;
+  const stock      = product?.totalStock;
+  const image      = product?.imagesByColor?.[firstKey][0].url  ?? null;
   const createdAt  = product?.createdAt
     ? new Date(product.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
     : null;
@@ -86,7 +88,7 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
     : 'text-emerald-600';
 
   const handleView = () => {
-    if (productId) navigate(`/seller/dashboard/products/${productId}`);
+    if (productId) navigate(`/seller/dashboard/products/${productId}/variant`);
   };
 
   const handleDeleteClick = () => {
@@ -111,7 +113,7 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
         {image ? (
           <img
             src={image}
-            alt={name}
+            alt={title}
             className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
             style={{ transform: imgHovered ? 'scale(1.04)' : 'scale(1)' }}
           />
@@ -148,9 +150,9 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
             <h3
               className="font-serif text-[1.05rem] sm:text-[1.15rem] font-normal text-snitch-charcoal leading-snug m-0 truncate cursor-pointer border-b border-transparent transition-[border-color] duration-300 hover:border-snitch-charcoal"
               onClick={handleView}
-              title={name}
+              title={title}
             >
-              {name}
+              {title}
             </h3>
             {createdAt && (
               <p className="font-label text-[0.55rem] tracking-[0.1em] uppercase text-snitch-faint m-0 mt-1">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '../../products/hook/useProducts';
-import { variantSchema } from '../../products/validations/VariantValidationSchema';
+import { variantSchema } from '../../products/validations/productValidation';
 import ProductImageUploader from '../../products/components/ProductImageUploader';
 import Add_Variant from '../../products/components/AddVariant';
 

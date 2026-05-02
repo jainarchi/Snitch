@@ -14,7 +14,6 @@ export const validateRequest = (req, res, next) => {
 export const validateProductId = [
 
   param('id').isMongoId().withMessage("Invalid product ID format"),
-
   validateRequest
 ];
 
@@ -111,8 +110,6 @@ export const validateProduct = [
 
 
 
-
-
 export const VariantValidation = [
   param("id")
     .isMongoId()
@@ -125,16 +122,6 @@ export const VariantValidation = [
     .isInt({ min: 0 })
     .withMessage("Price must be a valid positive number"),
 
-  // images (if you send URLs)
-  body("images")
-    .optional()
-    .isArray()
-    .withMessage("Images must be an array"),
-
-  body("images.*")
-    .optional()
-    .isURL()
-    .withMessage("Each image must be a valid URL"),
 
 
     ...colorAndSizesValidation , 

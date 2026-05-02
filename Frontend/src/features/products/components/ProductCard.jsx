@@ -13,24 +13,21 @@ const formatPrice = (price) => {
 }
 
 const ProductCard = ({ product, onClick }) => {
-  const [hovered, setHovered] = useState(false)
 
   return (
     <div
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       className="cursor-pointer group"
     >
       {/* ── Image ── */}
       <div className="relative overflow-hidden bg-[#eae8e5] mb-4 sm:mb-5"
-           style={{ aspectRatio: '3/4' }}>
+           style={{ aspectRatio: '6/7' }}>
         {product?.image ? (
           <img
             src={product.image}
-            alt={product?.name || 'Product'}
-            className="w-full h-full object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-            style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
+            alt={product.title || 'Product'}
+            className="w-full h-full object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-102"
+            
           />
         ) : (
           <div className="w-full h-full bg-[#e4e2df] flex items-center justify-center">
@@ -55,10 +52,10 @@ const ProductCard = ({ product, onClick }) => {
         <p
           className="font-[family-name:var(--font-serif)] text-lg sm:text-xl font-normal text-[#1b1c1a]
                      leading-snug inline-block border-b border-transparent
-                     transition-[border-color] duration-300"
-          style={{ borderColor: hovered ? '#1b1c1a' : 'transparent' }}
+                     transition-[border-color] duration-300
+                     group-hover:border-snitch-faint  "
         >
-          {product?.name || 'Untitled'}
+          {product.title || 'Untitled'}
         </p>
 
         <p className="font-[family-name:var(--font-sans)] text-xs sm:text-[13px] font-light

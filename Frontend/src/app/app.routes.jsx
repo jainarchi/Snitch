@@ -61,7 +61,7 @@ export const appRouter = createBrowserRouter([
                         element: <SellerDashboardOverview />,
                     },
                     {
-                        path: "products/:productId",
+                        path: "products/:productId/variant",
                         element: <EditProductDetails />,
                     },
                     {
