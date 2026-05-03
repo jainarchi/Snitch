@@ -19,6 +19,25 @@ router.post('/add/:productId/:variantId' , authenticateUser , validateAddToCart,
 
 
 
+/**
+ * @route DELETE /api/carts/remove/:productId/:variantId
+ * @description Remove an item from cart
+ * @param  itemId - Item ID of the item to be removed
+ * @access Private
+ */
+
+router.patch('/remove/:itemId' , authenticateUser , removeItemFromCart )
+
+
+
+/**
+ * @route GET /api/carts
+ * @description Get all cart items
+ * @access Private
+ */
+
+router.get('/' , authenticateUser , getCartItems )
+
 
 
 
