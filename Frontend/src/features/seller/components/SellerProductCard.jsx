@@ -244,15 +244,15 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
       </div>
 
       {/* Price */}
-      <div className="hidden sm:block shrink-0 text-right">
+      <div className=" shrink-0 text-right">
         <p className="font-body text-[0.88rem] font-semibold text-snitch-charcoal m-0">
           {formatPrice(price)}
         </p>
       </div>
 
       {/* Stock */}
-      <div className="hidden md:block shrink-0">
-        <p className={`font-label text-[0.6rem] tracking-[0.1em] uppercase m-0 ${stockColor}`}>
+      <div className=" shrink-0">
+        <p className={`font-label text-[0.74rem] tracking-[0.1em] uppercase m-0 ${stockColor}`}>
           {stock === 0 ? 'Out of Stock' : `${stock} units`}
         </p>
       </div>
@@ -268,7 +268,7 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
         disabled={isDeleting}
         className={[
           'shrink-0 flex items-center gap-1.5 font-label text-[0.6rem] tracking-[0.1em] uppercase bg-transparent border-none p-0 cursor-pointer transition-colors duration-300',
-          confirm ? 'text-red-500' : 'text-snitch-faint hover:text-red-400',
+          confirm ? 'text-red-500' : 'text-snitch-muted hover:text-red-400',
           isDeleting ? 'opacity-40 cursor-not-allowed' : '',
         ].join(' ')}
       >
@@ -282,7 +282,7 @@ const SellerProductCard = ({ product, onDelete, isDeleting = false , alignment =
             </svg>
           )
         }
-        <span className="hidden sm:inline">{confirm ? 'Sure?' : 'Delete'}</span>
+        <span>{confirm ? 'Sure?' : 'Delete'}</span>
       </button>
     </div>
   

@@ -39,9 +39,10 @@ passport.use(new GoogleStrategy({
 
 import authRouter from './routes/auth.routes.js'
 import productRouter from './routes/product.routes.js'
+import cartRouter from './routes/cart.routes.js'
 
 app.use('/api/auth' , authRouter)
 app.use('/api/products' , productRouter)
-
+app.use('/api/cart' , cartRouter)
 
 export default app

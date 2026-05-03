@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useProducts } from '../hook/useProducts'
 import Navbar from '../../shared/Nabvar.jsx'
@@ -25,11 +25,8 @@ const formatDate = (iso) => {
   })
 }
 
-
-
 /*  Action button  */
 const ActionButton = ({ label, variant, onClick, disabled = false }) => {
-
   const isPrimary = variant === 'primary'
 
   return (
@@ -49,12 +46,27 @@ const ActionButton = ({ label, variant, onClick, disabled = false }) => {
   )
 }
 
-
+/* Selection Button */
+const SelectionButton = ({ label, isSelected, onClick, disabled }) => {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`min-w-[3rem] px-4 py-2.5 text-[11px] tracking-[0.1em] uppercase transition-all duration-300 cursor-pointer
+        ${isSelected 
+          ? 'bg-[#1b1c1a] text-[#fbf9f6] border border-[#1b1c1a]' 
+          : 'bg-transparent text-[#1b1c1a] border border-[#d6d4d1] hover:border-[#1b1c1a]'
+        }
+        disabled:opacity-40 disabled:cursor-not-allowed
+      `}
+    >
+      {label}
+    </button>
+  )
+}
 
 /*  Thumbnail  */
 const Thumbnail = React.memo(({ url, alt, isActive, onClick }) => {
-
-
   return (
     <button
       type="button"
@@ -78,28 +90,37 @@ const Thumbnail = React.memo(({ url, alt, isActive, onClick }) => {
   )
 })
 
-
-
-
 const ProductDetails = () => {
   const { productId } = useParams()
   const { handleGetProductDetails } = useProducts()
 
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
+  
+  const [selectedColor, setSelectedColor] = useState(null)
+  const [selectedSize, setSelectedSize] = useState(null)
   const [activeIdx, setActiveIdx] = useState(0)
-
 
   async function fetchProductDetails() {
     try {
       setLoading(true);
       const data = await handleGetProductDetails(productId);
       setProduct(data);
+      
+      // Initialize selections
+      if (data?.variants?.length > 0) {
+        const firstAvailable = data.variants.find(v => v.stock > 0) || data.variants[0];
+        setSelectedColor(firstAvailable.color);
+        setSelectedSize(firstAvailable.size);
+      } else if (data?.imagesByColor) {
+         const colors = Object.keys(data.imagesByColor);
+         if (colors.length > 0) setSelectedColor(colors[0]);
+      }
+
       setActiveIdx(0)
     }
     catch (err) {
       console.log(err);
-
     }
     finally {
       setLoading(false);
@@ -110,30 +131,73 @@ const ProductDetails = () => {
     fetchProductDetails();
   }, [])
 
+  // Derived state
+  const availableColors = useMemo(() => {
+    if (!product) return [];
+    if (product.imagesByColor) return Object.keys(product.imagesByColor);
+    if (product.variants) {
+      const colors = new Set(product.variants.map(v => v.color));
+      return Array.from(colors);
+    }
+    return [];
+  }, [product]);
 
+  const availableVariantsForColor = useMemo(() => {
+    if (!product || !product.variants) return [];
+    const variantsForColor = product.variants.filter(v => v.color === selectedColor);
+    const uniqueSizes = new Map();
+    variantsForColor.forEach(v => {
+      if (!uniqueSizes.has(v.size)) {
+        uniqueSizes.set(v.size, v);
+      } else if (v.stock > 0 && uniqueSizes.get(v.size).stock <= 0) {
+        uniqueSizes.set(v.size, v);
+      }
+    });
+    return Array.from(uniqueSizes.values());
+  }, [product, selectedColor]);
 
-  const images = product?.images ?? []
+  // Handle color change
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    setActiveIdx(0);
+    // Auto-select first available size for this color
+    if (product && product.variants) {
+      const variants = product.variants.filter(v => v.color === color);
+      const firstInStock = variants.find(v => v.stock > 0) || variants[0];
+      if (firstInStock) {
+        setSelectedSize(firstInStock.size);
+      } else {
+        setSelectedSize(null);
+      }
+    }
+  }
+
+  // Get current images
+  const images = useMemo(() => {
+    if (!product) return [];
+    if (product.imagesByColor && selectedColor && product.imagesByColor[selectedColor]) {
+       return product.imagesByColor[selectedColor];
+    }
+    return product.images || [];
+  }, [product, selectedColor]);
+
   const total = images.length
   const activeImage = images[activeIdx]?.url ?? null
-
-
 
   const prev = useCallback(() => {
     setActiveIdx(i => (i - 1 + total) % total)
   }, [total])
 
-
-
   const next = useCallback(() => {
     setActiveIdx(i => (i + 1) % total)
   }, [total])
 
+  const selectedVariant = useMemo(() => {
+    return availableVariantsForColor.find(v => v.size === selectedSize);
+  }, [availableVariantsForColor, selectedSize]);
 
-
-
-
-
-
+  const currentPrice = selectedVariant?.price || product?.price;
+  const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : false;
 
   return (
     <>
@@ -147,10 +211,7 @@ const ProductDetails = () => {
         {/* Navbar with back-button in right slot */}
         <Navbar rightSlot={<BackButton />} />
 
-
         {loading && <Loading />}
-
-
 
         {/*  Not found  */}
         {!loading && !product && (
@@ -174,21 +235,19 @@ const ProductDetails = () => {
                            px-4 sm:px-8 lg:px-12 xl:px-16
                            py-8 sm:py-12 lg:py-16 pb-16 sm:pb-20 lg:pb-24">
            
-            <div className="flex flex-col gap-10 lg:flex-row  ">
+            <div className="flex flex-col gap-12 lg:flex-row ">
 
               <div className="w-full flex flex-col sm:flex-row gap-3 ">
-
                 {/*  Thumbnail */}
                 {total > 1 && (
                   <div
-                    className="flex sm:flex-col gap-2 order-2 sm:order-1 sm:w-[72px] lg:w-[80px] flex-shrink-0"
+                    className="flex sm:flex-col gap-2 order-2 sm:order-1 sm:w-[72px] lg:w-[80px] flex-shrink-0 overflow-x-auto sm:overflow-visible"
                   >
                     {images.map((img, idx) => (
-                      <div key={img._id ?? idx} className="w-14 sm:w-full">
-                        {console.log(img)}
+                      <div key={img._id ?? idx} className="w-16 sm:w-full flex-shrink-0">
                         <Thumbnail
                           url={img.url}
-                          alt={`${product.name} — view ${idx + 1}`}
+                          alt={`${product.title} — view ${idx + 1}`}
                           isActive={activeIdx === idx}
                           onClick={() => setActiveIdx(idx)}
                         />
@@ -199,15 +258,15 @@ const ProductDetails = () => {
 
                 {/*  Main image (4:5) with prev/next arrows  */}
                 <div
-                  className=" group relative overflow-hidden bg-[#eae8e5] order-1 sm:order-2 flex-1 max-w-[26rem]"
-                  style={{ aspectRatio: '4/5' }}
+                  className="group relative overflow-hidden order-1 sm:order-2 flex-1 w-full max-w-[30rem]"
+                  style={{ aspectRatio: '3/4' }}
                 >
                   {/* Image */}
                   {activeImage ? (
                     <img
                       src={activeImage}
-                      alt={product.name}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                      alt={product.title}
+                      className="absolute inset-0 w-full aspect-[3/4] object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     />
                   ) : (
                     <div className="absolute inset-0 bg-[#e4e2df] flex items-center justify-center">
@@ -286,12 +345,9 @@ const ProductDetails = () => {
                 </div>
               </div>
 
+              <div className="w-full lg:p-2 lg:max-w-xl">
 
-
-
-              <div className="w-full lg:p-2  ">
-
-                {/* Gold label */}
+               
                 <p className="text-[9px] tracking-[0.28em] uppercase text-[#C9A96E]
                               font-[family-name:var(--font-sans)] font-medium mb-3">
                   Product
@@ -299,35 +355,84 @@ const ProductDetails = () => {
 
                 {/* Product name */}
                 <h1 className="font-[family-name:var(--font-serif)] font-light
-                               leading-[1.08] text-[#1b1c1a] mb-3
-                               text-[clamp(24px,3vw,44px)]">
-                  {product.name}
+                               leading-[1.08] text-[#1b1c1a] mb-4
+                               text-[clamp(28px,3.5vw,44px)]">
+                  {product.title}
                 </h1>
 
                 {/* Gold rule */}
-                <div className="w-10 h-px bg-[#C9A96E] mb-5" />
+                <div className="w-8 h-px bg-[#C9A96E] mb-6" />
 
-                {/* Currency */}
-                <p className="text-[9px] tracking-[0.2em] uppercase text-[#B5ADA3]
-                              font-[family-name:var(--font-sans)] mb-1.5">
-                  {product.price?.currency ?? 'INR'}
-                </p>
+                {/* Currency & Price */}
+                <div className="mb-8">
+                  <p className="text-[9px] tracking-[0.2em] uppercase text-[#B5ADA3]
+                                font-[family-name:var(--font-sans)] mb-1.5">
+                    {currentPrice?.currency ?? 'INR'}
+                  </p>
+                  <p className="font-[family-name:var(--font-serif)] font-normal
+                                text-[#1b1c1a] -tracking-[0.01em]
+                                text-[clamp(24px,3vw,34px)]">
+                    {formatPrice(currentPrice)}
+                  </p>
+                </div>
 
-                {/* Price */}
-                <p className="font-[family-name:var(--font-serif)] font-normal
-                              text-[#1b1c1a] mb-5 -tracking-[0.01em]
-                              text-[clamp(22px,2.5vw,34px)]">
-                  {formatPrice(product.price)}
-                </p>
+                {/* Colors */}
+                {availableColors.length > 0 && (
+                  <div className="mb-8">
+                    <p className="text-[9px] tracking-[0.2em] uppercase text-[#B5ADA3]
+                                  font-[family-name:var(--font-sans)] mb-3">
+                      Color <span className="text-[#1b1c1a] ml-2 font-medium">{selectedColor}</span>
+                    </p>
+                    <div className="flex flex-wrap gap-2.5">
+                      {availableColors.map(color => (
+                        <SelectionButton
+                          key={color}
+                          label={color}
+                          isSelected={selectedColor === color}
+                          onClick={() => handleColorSelect(color)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sizes */}
+                {availableVariantsForColor.length > 0 && (
+                  <div className="mb-8">
+                    <div className="flex justify-between items-end mb-3">
+                      <p className="text-[9px] tracking-[0.2em] uppercase text-[#B5ADA3]
+                                    font-[family-name:var(--font-sans)]">
+                        Size <span className="text-[#1b1c1a] ml-2 font-medium">{selectedSize}</span>
+                      </p>
+                      {isOutOfStock && (
+                        <p className="text-[9px] tracking-[0.1em] uppercase text-red-800
+                                      font-[family-name:var(--font-sans)] bg-red-50 px-2 py-1">
+                          Out of Stock
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2.5">
+                      {availableVariantsForColor.map(variant => (
+                        <SelectionButton
+                          key={variant.size}
+                          label={variant.size}
+                          isSelected={selectedSize === variant.size}
+                          onClick={() => setSelectedSize(variant.size)}
+                          disabled={variant.stock <= 0}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Description */}
                 {product.description && (
-                  <div className="mb-5">
+                  <div className="mb-8 mt-2">
                     <p className="text-[9px] tracking-[0.2em] uppercase text-[#B5ADA3]
-                                  font-[family-name:var(--font-sans)] mb-2">
+                                  font-[family-name:var(--font-sans)] mb-3">
                       Description
                     </p>
-                    <p className="text-[13px] leading-[1.75] text-[#4d463a]
+                    <p className="text-[13px] leading-[1.8] text-[#4d463a]
                                   font-[family-name:var(--font-sans)] font-light">
                       {product.description}
                     </p>
@@ -337,22 +442,24 @@ const ProductDetails = () => {
                 {/* Added date */}
                 {product.createdAt && (
                   <p className="text-[9px] tracking-[0.18em] uppercase text-[#B5ADA3]
-                                font-[family-name:var(--font-sans)] mb-7 sm:mb-8">
+                                font-[family-name:var(--font-sans)] mb-8">
                     Added {formatDate(product.createdAt)}
                   </p>
                 )}
 
                 {/* Action buttons */}
-                <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-3 mt-4">
                   <ActionButton
-                    label="Buy Now"
+                    label={isOutOfStock ? 'Out of Stock' : 'Buy Now'}
                     variant="primary"
-                    onClick={() => console.log('Buy Now:', product._id)}
+                    disabled={isOutOfStock || !selectedVariant}
+                    onClick={() => console.log('Buy Now:', product._id, selectedVariant)}
                   />
                   <ActionButton
                     label="Add to Cart"
                     variant="secondary"
-                    onClick={() => console.log('Add to Cart:', product._id)}
+                    disabled={isOutOfStock || !selectedVariant}
+                    onClick={() => console.log('Add to Cart:', product._id, selectedVariant)}
                   />
                 </div>
               </div>
