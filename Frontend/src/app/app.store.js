@@ -1,12 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from '../features/auth/state/auth.slice.js'
 import productReducer from '../features/products/state/products.slice.js'
-
+import cartReducer from '../features/cart/state/cart.slice.js'
 
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    products: productReducer
+    products: productReducer,
+    cart : cartReducer
   },
 })

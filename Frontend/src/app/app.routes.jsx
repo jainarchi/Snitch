@@ -15,6 +15,9 @@ import SellerProducts from "../features/seller/pages/Products";
 import SellerOrder from "../features/seller/pages/Order";
 import { Navigate } from "react-router-dom";
 
+import Cart from "../features/cart/pages/Cart";
+
+
 export const appRouter = createBrowserRouter([
     {
         path: "/",
@@ -83,6 +86,12 @@ export const appRouter = createBrowserRouter([
                 ],
             },
         ],
+    },
+
+    {
+        path : "/cart",
+        element: <Protected> <Cart /></Protected>
+
     },
 
 
