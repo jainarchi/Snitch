@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import React, { useEffect, useState, useCallback, useMemo, use } from 'react'
 import { useParams } from 'react-router-dom'
 import { useProducts } from '../hook/useProducts'
 import Navbar from '../../shared/Nabvar.jsx'
 import Footer from '../../shared/Footer.jsx'
 import Loading from '../../shared/Loading.jsx'
 import BackButton from '../../shared/BackButton.jsx'
+import { useCart } from '../../cart/hook/useCart.js'
 
 /*  Helpers  */
 const formatPrice = (price) => {
+
   if (!price) return '—'
   const sym =
     price.currency === 'INR' ? '₹'
@@ -93,6 +95,7 @@ const Thumbnail = React.memo(({ url, alt, isActive, onClick }) => {
 const ProductDetails = () => {
   const { productId } = useParams()
   const { handleGetProductDetails } = useProducts()
+  const { handleAddToCart } = useCart()
 
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -235,30 +238,14 @@ const ProductDetails = () => {
                            px-4 sm:px-8 lg:px-12 xl:px-16
                            py-8 sm:py-12 lg:py-16 pb-16 sm:pb-20 lg:pb-24">
            
-            <div className="flex flex-col gap-12 lg:flex-row ">
+            <div className="flex flex-col gap-12 lg:flex-row  justify-center  ">
 
-              <div className="w-full flex flex-col sm:flex-row gap-3 ">
-                {/*  Thumbnail */}
-                {total > 1 && (
-                  <div
-                    className="flex sm:flex-col gap-2 order-2 sm:order-1 sm:w-[72px] lg:w-[80px] flex-shrink-0 overflow-x-auto sm:overflow-visible"
-                  >
-                    {images.map((img, idx) => (
-                      <div key={img._id ?? idx} className="w-16 sm:w-full flex-shrink-0">
-                        <Thumbnail
-                          url={img.url}
-                          alt={`${product.title} — view ${idx + 1}`}
-                          isActive={activeIdx === idx}
-                          onClick={() => setActiveIdx(idx)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="w-full max-w-[24rem] flex flex-col  gap-3">
+               
 
                 {/*  Main image (4:5) with prev/next arrows  */}
                 <div
-                  className="group relative overflow-hidden order-1 sm:order-2 flex-1 w-full max-w-[30rem]"
+                  className="group relative overflow-hidden order-1 sm:order-2 flex-1 w-full max-w-[22rem] "
                   style={{ aspectRatio: '3/4' }}
                 >
                   {/* Image */}
@@ -343,9 +330,27 @@ const ProductDetails = () => {
                     </>
                   )}
                 </div>
+
+                 {/*  Thumbnail */}
+                {total > 1 && (
+                  <div
+                    className="flex gap-2 order-2 sm:order-1 sm:w-[72px] lg:w-[80px] flex-shrink-0 overflow-x-auto sm:overflow-visible "
+                  >
+                    {images.map((img, idx) => (
+                      <div key={img._id ?? idx} className="w-16 sm:w-full flex-shrink-0">
+                        <Thumbnail
+                          url={img.url}
+                          alt={`${product.title} — view ${idx + 1}`}
+                          isActive={activeIdx === idx}
+                          onClick={() => setActiveIdx(idx)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <div className="w-full lg:p-2 lg:max-w-xl">
+              <div className="w-full lg:p-2 lg:max-w-lg ">
 
                
                 <p className="text-[9px] tracking-[0.28em] uppercase text-[#C9A96E]
@@ -356,7 +361,7 @@ const ProductDetails = () => {
                 {/* Product name */}
                 <h1 className="font-[family-name:var(--font-serif)] font-light
                                leading-[1.08] text-[#1b1c1a] mb-4
-                               text-[clamp(28px,3.5vw,44px)]">
+                               text-[clamp(28px,3.5vw,32px)]">
                   {product.title}
                 </h1>
 
@@ -366,12 +371,12 @@ const ProductDetails = () => {
                 {/* Currency & Price */}
                 <div className="mb-8">
                   <p className="text-[9px] tracking-[0.2em] uppercase text-[#B5ADA3]
-                                font-[family-name:var(--font-sans)] mb-1.5">
+                                 mb-1.5">
                     {currentPrice?.currency ?? 'INR'}
                   </p>
-                  <p className="font-[family-name:var(--font-serif)] font-normal
+                  <p className="font-normal
                                 text-[#1b1c1a] -tracking-[0.01em]
-                                text-[clamp(24px,3vw,34px)]">
+                                text-[clamp(20px,3vw,26px)]">
                     {formatPrice(currentPrice)}
                   </p>
                 </div>
@@ -459,7 +464,10 @@ const ProductDetails = () => {
                     label="Add to Cart"
                     variant="secondary"
                     disabled={isOutOfStock || !selectedVariant}
-                    onClick={() => console.log('Add to Cart:', product._id, selectedVariant)}
+                    onClick={() => {
+                      handleAddToCart(product._id, selectedVariant._id)
+                      console.log('Add to Cart:', product._id, selectedVariant._id)
+                    }}
                   />
                 </div>
               </div>

@@ -166,7 +166,6 @@ const getCartItems = async (req, res) => {
                     product: {
                         id: product._id,
                         title: product.title,
-                        description: product.description,
                     },
 
                     variant: {

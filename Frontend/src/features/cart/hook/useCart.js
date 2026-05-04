@@ -19,7 +19,7 @@ export const useCart = () =>{
 
 
 
-  const handleAddItem = async ({productId , variantId , quantity}) =>{
+  const handleAddToCart = async (productId , variantId , quantity) =>{
 
     const data = await addToCart({productId , variantId , quantity})
     console.log(data.message)
@@ -41,7 +41,7 @@ export const useCart = () =>{
 
   return {
     handleGetCartItems,
-    handleAddItem,
+    handleAddToCart,
     handleRemoveItem
   }
 
