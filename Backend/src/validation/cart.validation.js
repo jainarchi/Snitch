@@ -19,9 +19,8 @@ export const validateAddToCart = [
 ]
 
 
-export const  validateRemoveItemFromCart = [
-    param('productId').isMongoId().withMessage("Invalid product ID format"),
-    param('variantId').isMongoId().withMessage("Invalid variant ID format"),
+export const  validateItemId = [
+    param('itemId').isMongoId().withMessage("Invalid product ID format"),
 
     validateRequest
 ]

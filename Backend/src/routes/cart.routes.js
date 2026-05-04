@@ -1,7 +1,7 @@
 import Router from 'express'
 import {authenticateUser} from '../middlewares/auth.middleware.js'
 import { addItemToCart , removeItemFromCart , getCartItems } from '../controllers/cart.controllers.js'
-import { validateAddToCart } from '../validation/cart.validation.js'
+import { validateAddToCart , validateItemId} from '../validation/cart.validation.js'
 
 const router = Router()
 
@@ -26,7 +26,7 @@ router.post('/add/:productId/:variantId' , authenticateUser , validateAddToCart,
  * @access Private
  */
 
-router.patch('/remove/:itemId' , authenticateUser , removeItemFromCart )
+router.patch('/remove/:itemId' , authenticateUser , validateItemId , removeItemFromCart )
 
 
 

@@ -32,8 +32,8 @@ const addItemToCart = async (req, res) => {
 
         const productVariant = product.variants.id(variantId)
         const availableStock = productVariant.stock
-        let totalVariantPrice = null ;
-         
+
+
         if (itemInCart) {
             if (itemInCart.quantity + quantity > availableStock) {
                 return res.status(400).json({
@@ -41,14 +41,9 @@ const addItemToCart = async (req, res) => {
                     message: `${availableStock - itemInCart.quantity} available in stock`
                 })
             }
-            
-            itemInCart.quantity += quantity
-            totalVariantPrice = itemInCart.price.amount * itemInCart.quantity
 
-            itemInCart.price = {
-                amount : totalVariantPrice,
-                currency : productVariant.price.currency
-            }
+            itemInCart.quantity += quantity
+
 
         } else {
 
@@ -59,20 +54,15 @@ const addItemToCart = async (req, res) => {
                 })
             }
 
-            totalVariantPrice = productVariant.price.amount * quantity
 
             cart.items.push({
                 product: productId,
                 variant: variantId,
                 quantity,
-                price : {
-                    amount : totalVariantPrice,
-                    currency : productVariant.price.currency
-                },
 
             })
         }
-       
+
         await cart.save()
 
 
@@ -149,28 +139,66 @@ const removeItemFromCart = async (req, res) => {
 
 const getCartItems = async (req, res) => {
 
-    try{
-        const userCart = await cartModel.findOne({user : req.user.id })
+    try {
+        const cart = await cartModel.findOne({ user: req.user.id })
 
-        if(!userCart){
+        if (!cart) {
             return res.status(404).json({
-                success : false,
-                message : "Cart not found"
+                success: false,
+                message: "Cart not found"
             })
         }
 
+
+        const cartItems = await Promise.all(
+
+            cart.items.map(async (item) => {
+
+                const product = await productModel.findById(item.product);
+                if (!product) return null;
+
+                const variant = product.variants.id(item.variant);
+                if (!variant) return null;
+
+                return {
+                    id: item._id,
+
+                    product: {
+                        id: product._id,
+                        title: product.title,
+                        description: product.description,
+                    },
+
+                    variant: {
+                        id: variant._id,
+                        color: variant.color,
+                        size: variant.size,
+                        stock: variant.stock,
+                        price: variant.price,
+                        image: product.imagesByColor?.get(variant.color)?.[0]?.url || null
+                    },
+
+                    quantity: item.quantity
+                };
+            })
+        );
+
+
+        console.log(cartItems)  
+
         res.status(200).json({
-            success : true,
-            message : "Cart items fetched successfully",
-            items : userCart.items
+            success: true,
+            message: "Cart items fetched successfully",
+            cartItems   
+
         })
     }
 
-    catch(err){
+    catch (err) {
         console.log(err)
         res.status(500).json({
-            success : false,
-            message : "Internal server error"
+            success: false,
+            message: "Internal server error"
         })
     }
 

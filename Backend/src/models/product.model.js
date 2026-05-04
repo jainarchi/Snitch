@@ -75,7 +75,7 @@ const productSchema = new mongoose.Schema({
 
 
 productSchema.index(
-  { "variants.color": 1, "variants.size": 1 },
+  { _id : 1 , "variants.color": 1, "variants.size": 1 },
   { unique: true }
 );
 

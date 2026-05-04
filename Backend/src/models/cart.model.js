@@ -22,10 +22,6 @@ const cartSchema = new mongoose.Schema({
             quantity: {
                 type: Number,
                 required: true
-            },
-            price:{
-                type : priceSchema,
-                required : true 
             }
         }
     ]

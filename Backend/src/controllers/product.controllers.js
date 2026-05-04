@@ -2,6 +2,57 @@ import userModel from "../models/user.model.js";
 import productModel from "../models/product.model.js";
 import { uploadFiles } from "../services/image.service.js";
 
+
+
+const addColorVariant = async ({ product, priceAmount, color, sizes, files }) => {
+
+const normalizedColor = color.toLowerCase().trim();
+
+  const seen = new Set(
+    product.variants.map(v => `${v.color}-${v.size}`)
+  );
+
+  const images = await Promise.all(
+    files.map((file) =>
+      uploadFiles({
+        buffer: file.buffer,
+        fileName: file.originalname,
+      }),
+    ),
+  );
+
+
+
+  // add images to imagesByColor
+  product.imagesByColor.set(
+    normalizedColor,
+    images.map(img => ({ url: img.url }))
+  )
+
+  // create variants
+  sizes.forEach(s => {
+    const size = s.size.toUpperCase().trim();
+    const key = `${normalizedColor}-${size}`;
+
+    if (seen.has(key)) {
+          throw new Error(`Duplicate variant: ${key}`);
+    }
+
+    seen.add(key);
+    product.variants.push({
+      size: s.size,
+      stock: s.stock,
+      price: {
+        amount: Number(priceAmount) || product.price.amount,
+        currency: product.price.currency
+      },
+      color: normalizedColor
+    })
+  })
+
+}
+
+
 const createProduct = async (req, res) => {
   try {
     const { title, description, priceAmount, priceCurrency, color, sizes } = req.body
@@ -13,16 +64,6 @@ const createProduct = async (req, res) => {
         message: "At least one image is required",
       });
     }
-
-
-    const images = await Promise.all(
-      req.files.map((file) =>
-        uploadFiles({
-          buffer: file.buffer,
-          fileName: file.originalname,
-        }),
-      ),
-    );
 
     const product = await productModel({
       seller: req.seller.id,
@@ -36,26 +77,16 @@ const createProduct = async (req, res) => {
     });
 
 
-    // add images to imagesByColor
-    product.imagesByColor.set(
-      color,
-      images.map(img => ({ url: img.url }))
-    )
-
-    // create variants
-    sizes.forEach(s => {
-      product.variants.push({
-        size: s.size,
-        stock: s.stock,
-        price: {
-          amount: Number(priceAmount) || product.price.amount,
-          currency: product.currency
-        },
-        color
-      })
+    await addColorVariant({
+      product, 
+      priceAmount, 
+      color, 
+      sizes , 
+      files : req.files
     })
 
-    await product.save();
+
+    await product.save()
 
 
     res.status(201).json({
@@ -66,6 +97,12 @@ const createProduct = async (req, res) => {
 
   }
   catch (err) {
+    if (err.code === 11000 || err.message.includes('Duplicate variant')) {
+  return res.status(400).json({
+    success: false,
+    message: "Variant already exists"
+  });
+}
     console.log(err);
     res.status(500).json({
       success: false,
@@ -73,6 +110,73 @@ const createProduct = async (req, res) => {
     });
   }
 };
+
+
+
+
+const createVariants = async (req, res) => {
+  try {
+
+    const product = await productModel.findOne({
+      _id: req.params.id,
+      seller: req.seller.id
+    })
+
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found"
+      })
+    }
+
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one image is required",
+      });
+    }
+
+
+    const { priceAmount, color, sizes } = req.body
+
+
+
+    await addColorVariant({
+      product,
+      priceAmount,
+      color,
+      sizes,
+      files: req.files
+
+    })
+
+    await product.save()
+
+
+    res.status(200).json({
+      success: true,
+      message: "Variants created successfully",
+      product
+    })
+
+  }
+  catch (err) {
+    if(err.code === 11000 || err.message.includes('Duplicate variant')){
+      return res.status(400).json({
+        success : false,
+        message : "Variant already exists"
+      })
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong"
+    })
+  }
+}
+
 
 
 // get all products made by seller
@@ -228,82 +332,6 @@ const deleteProduct = async (req, res) => {
     })
   }
 
-}
-
-
-
-const createVariants = async (req, res) => {
-  try {
-
-    const product = await productModel.findOne({
-      _id: req.params.id,
-      seller: req.seller.id
-    })
-
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found"
-      })
-    }
-
-
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "At least one image is required",
-      });
-    }
-
-
-    const images = await Promise.all(
-      req.files.map((file) =>
-        uploadFiles({
-          buffer: file.buffer,
-          fileName: file.originalname,
-        }),
-      ),
-    );
-
-    const { priceAmount, color, sizes } = req.body
-
-    // add images to imagesByColor
-    product.imagesByColor.set(
-      color,
-      images.map(img => ({ url: img.url }))
-    )
-
-    // create variants
-    sizes.forEach(s => {
-      product.variants.push({
-        size: s.size,
-        stock: s.stock,
-        price: {
-          amount: Number(priceAmount) || product.price.amount,
-          currency: product.currency
-        },
-        color
-      })
-    })
-
-    await product.save()
-
-
-    res.status(200).json({
-      success: true,
-      message: "Variants created successfully",
-      product
-    })
-
-  }
-  catch (err) {
-    console.log(err)
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong"
-    })
-  }
 }
 
 
