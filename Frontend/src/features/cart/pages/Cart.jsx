@@ -57,7 +57,7 @@ const Cart = () => {
 
         <header className="mb-14">
           <h1
-            className="text-4xl font-semibold leading-tight text-[#1b1c1a] mb-2"
+            className="text-2xl sm:text-4xl font-semibold leading-tight text-[#1b1c1a] mb-2"
           >
             Your Shopping Bag
           </h1>
@@ -101,7 +101,7 @@ const Cart = () => {
 
             {/*  RIGHT: Order Summary  */}
             <aside
-              className="bg-[#f5f3f0] p-8 sticky top-28"
+              className="bg-[#f5f3f0] p-4 sm:p-8 sticky top-28"
               aria-label="Order summary"
             >
               <h2
