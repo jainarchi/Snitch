@@ -17,11 +17,35 @@ import { Navigate } from "react-router-dom";
 
 import Cart from "../features/cart/pages/Cart";
 import Wishlist from '../features/products/pages/Wishlist'
+import AppLayout from "./AppLayout";
 
 export const appRouter = createBrowserRouter([
+
     {
         path: "/",
-        element: <Home />,
+        element : <AppLayout />,
+        children: [
+            {
+                index: true,
+                element: <Home />
+            },
+            {
+                path: "/products/:productId",
+                element: <ProductDetails />,
+            },
+            {
+                path: "cart",
+                element: <Protected >
+                    <Cart />
+                </Protected>
+            },
+            {
+                path: "wishlist",
+                element: <Protected >
+                    <Wishlist />
+                </Protected>
+            },
+        ]
     },
     {
         path: "/login",
@@ -31,10 +55,7 @@ export const appRouter = createBrowserRouter([
         path: "/register",
         element: <Register />,
     },
-    {
-        path: "/products/:productId",
-        element: <ProductDetails />,
-    },
+
     {
         path: "/seller",
         children: [
@@ -87,17 +108,6 @@ export const appRouter = createBrowserRouter([
             },
         ],
     },
-
-    {
-        path : "/cart",
-        element: <Cart />
-    },
-    {
-        path : '/wishlist',
-        element: <Wishlist />
-
-    },
-
 
 
     {

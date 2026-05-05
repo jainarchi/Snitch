@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useCallback, useMemo, use } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useProducts } from '../hook/useProducts'
-import Navbar from '../../shared/Nabvar.jsx'
+import Navbar from '../../shared/navbar/Nabvar.jsx'
 import Footer from '../../shared/Footer.jsx'
 import Loading from '../../shared/Loading.jsx'
 import BackButton from '../../shared/BackButton.jsx'
 import { useCart } from '../../cart/hook/useCart.js'
+import { useSelector } from 'react-redux'
 
 /*  Helpers  */
 const formatPrice = (price) => {
@@ -93,6 +94,7 @@ const Thumbnail = React.memo(({ url, alt, isActive, onClick }) => {
 })
 
 const ProductDetails = () => {
+  const navigate = useNavigate()
   const { productId } = useParams()
   const { handleGetProductDetails } = useProducts()
   const { handleAddToCart } = useCart()
@@ -202,6 +204,8 @@ const ProductDetails = () => {
   const currentPrice = selectedVariant?.price || product?.price;
   const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : false;
 
+  const user = useSelector(state => state.auth.user)
+
   return (
     <>
       <link
@@ -211,8 +215,7 @@ const ProductDetails = () => {
 
       <div className="bg-[#fbf9f6] text-[#1b1c1a] min-h-screen
                       font-[family-name:var(--font-sans)] selection:bg-[#C9A96E]/30">
-        {/* Navbar with back-button in right slot */}
-        <Navbar rightSlot={<BackButton />} />
+       
 
         {loading && <Loading />}
 
@@ -452,30 +455,44 @@ const ProductDetails = () => {
                   </p>
                 )}
 
-                {/* Action buttons */}
+
+
+                
                 <div className="flex flex-col gap-3 mt-4">
                   <ActionButton
                     label={isOutOfStock ? 'Out of Stock' : 'Buy Now'}
                     variant="primary"
-                    disabled={isOutOfStock || !selectedVariant}
-                    onClick={() => console.log('Buy Now:', product._id, selectedVariant)}
+                    disabled={ user?.role === 'seller'  || isOutOfStock || !selectedVariant }
+                    onClick={() =>{ 
+                      console.log('Buy Now:', product._id, selectedVariant)
+                      if( !user){
+                        navigate('/login' , {replace: true})
+                     }
+                      //  handleBuyNow(product._id, selectedVariant._id)
+                    }}
                   />
                   <ActionButton
                     label="Add to Cart"
                     variant="secondary"
-                    disabled={isOutOfStock || !selectedVariant}
+                    disabled={ user?.role === 'seller' ||isOutOfStock || !selectedVariant}
                     onClick={() => {
+                       if( !user){
+                          navigate('/login' , {replace: true})
+                       }
                       handleAddToCart(product._id, selectedVariant._id)
                       console.log('Add to Cart:', product._id, selectedVariant._id)
                     }}
                   />
                 </div>
+
+
+
+
               </div>
             </div>
           </main>
         )}
 
-        {!loading && <Footer />}
       </div>
     </>
   )

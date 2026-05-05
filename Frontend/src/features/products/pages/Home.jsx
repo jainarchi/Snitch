@@ -3,9 +3,9 @@ import { useProducts } from '../hook/useProducts.js'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard.jsx'
-import Navbar from '../../shared/Nabvar.jsx'
+import Navbar from '../../shared/navbar/Nabvar.jsx'
 import Footer from '../../shared/Footer.jsx'
-
+import Loading from '../../shared/Loading.jsx'
 
 const Hero = () => (
   <section className="max-w-[1400px] mx-auto
@@ -36,12 +36,19 @@ const Home = () => {
   const loading = useSelector((s) => s.products.loading.allProducts)
   const error = useSelector((s) => s.products.error.allProducts)
   const allProducts = useSelector((s) => s.products.allProducts)
+  
 
   useEffect(() => {
     handleGetAllProducts()
     return () => { dispatch(clearError('allProducts')) }
   }, [])
 
+  
+
+
+  if(loading ){
+    return( <Loading />)
+  }
 
 
 
@@ -56,7 +63,7 @@ const Home = () => {
 
       <div className="bg-[#fbf9f6] text-[#1b1c1a] min-h-screen
                       font-[family-name:var(--font-sans)] selection:bg-[#C9A96E]/30">
-        <Navbar />
+        
         <Hero />
 
         {/* ── Collection section ── */}
@@ -124,7 +131,6 @@ const Home = () => {
           )}
         </section>
 
-        <Footer />
       </div>
     </>
   )

@@ -3,9 +3,11 @@ import { useAuth } from '../hook/useAuth';
 import { useNavigate } from 'react-router-dom';
 import ContinueWithGoogleButton from '../components/ContinueWithGoogleButton.jsx';
 
+
 const Login = () => {
   const {handleLogin} = useAuth()
   const navigate = useNavigate()
+
 
   const [formData, setFormData] = useState({
     email: '',
