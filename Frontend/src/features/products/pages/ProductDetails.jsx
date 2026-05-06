@@ -7,6 +7,10 @@ import Loading from '../../shared/Loading.jsx'
 import BackButton from '../../shared/BackButton.jsx'
 import { useCart } from '../../cart/hook/useCart.js'
 import { useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import Icons from '../../shared/Icons/Icons.js'
+
+
 
 /*  Helpers  */
 const formatPrice = (price) => {
@@ -56,8 +60,8 @@ const SelectionButton = ({ label, isSelected, onClick, disabled }) => {
       onClick={onClick}
       disabled={disabled}
       className={`min-w-[3rem] px-4 py-2.5 text-[11px] tracking-[0.1em] uppercase transition-all duration-300 cursor-pointer
-        ${isSelected 
-          ? 'bg-[#1b1c1a] text-[#fbf9f6] border border-[#1b1c1a]' 
+        ${isSelected
+          ? 'bg-[#1b1c1a] text-[#fbf9f6] border border-[#1b1c1a]'
           : 'bg-transparent text-[#1b1c1a] border border-[#d6d4d1] hover:border-[#1b1c1a]'
         }
         disabled:opacity-40 disabled:cursor-not-allowed
@@ -101,7 +105,7 @@ const ProductDetails = () => {
 
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
-  
+
   const [selectedColor, setSelectedColor] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
   const [activeIdx, setActiveIdx] = useState(0)
@@ -111,15 +115,15 @@ const ProductDetails = () => {
       setLoading(true);
       const data = await handleGetProductDetails(productId);
       setProduct(data);
-      
+
       // Initialize selections
       if (data?.variants?.length > 0) {
         const firstAvailable = data.variants.find(v => v.stock > 0) || data.variants[0];
         setSelectedColor(firstAvailable.color);
         setSelectedSize(firstAvailable.size);
       } else if (data?.imagesByColor) {
-         const colors = Object.keys(data.imagesByColor);
-         if (colors.length > 0) setSelectedColor(colors[0]);
+        const colors = Object.keys(data.imagesByColor);
+        if (colors.length > 0) setSelectedColor(colors[0]);
       }
 
       setActiveIdx(0)
@@ -181,7 +185,7 @@ const ProductDetails = () => {
   const images = useMemo(() => {
     if (!product) return [];
     if (product.imagesByColor && selectedColor && product.imagesByColor[selectedColor]) {
-       return product.imagesByColor[selectedColor];
+      return product.imagesByColor[selectedColor];
     }
     return product.images || [];
   }, [product, selectedColor]);
@@ -196,6 +200,29 @@ const ProductDetails = () => {
   const next = useCallback(() => {
     setActiveIdx(i => (i + 1) % total)
   }, [total])
+
+
+  const addToCart = async () => {
+    console.log(user)
+
+    if (!user) {
+      navigate('/login', { replace: true })
+    }
+
+    const res = await handleAddToCart(product._id, selectedVariant._id)
+
+    if (res.success) {
+      toast.success(res.message)
+    }
+    else {
+      toast.error(res.message)
+    }
+
+    console.log('Add to Cart:', product._id, selectedVariant._id)
+  }
+
+
+
 
   const selectedVariant = useMemo(() => {
     return availableVariantsForColor.find(v => v.size === selectedSize);
@@ -215,7 +242,7 @@ const ProductDetails = () => {
 
       <div className="bg-[#fbf9f6] text-[#1b1c1a] min-h-screen
                       font-[family-name:var(--font-sans)] selection:bg-[#C9A96E]/30">
-       
+
 
         {loading && <Loading />}
 
@@ -240,11 +267,11 @@ const ProductDetails = () => {
           <main className="max-w-[1400px] mx-auto
                            px-4 sm:px-8 lg:px-12 xl:px-16
                            py-8 sm:py-12 lg:py-16 pb-16 sm:pb-20 lg:pb-24">
-           
+
             <div className="flex flex-col gap-12 lg:flex-row  justify-center  ">
 
               <div className="w-full max-w-[24rem] flex flex-col  gap-3">
-               
+
 
                 {/*  Main image (4:5) with prev/next arrows  */}
                 <div
@@ -334,7 +361,7 @@ const ProductDetails = () => {
                   )}
                 </div>
 
-                 {/*  Thumbnail */}
+                {/*  Thumbnail */}
                 {total > 1 && (
                   <div
                     className="flex gap-2 order-2 sm:order-1 sm:w-[72px] lg:w-[80px] flex-shrink-0 overflow-x-auto sm:overflow-visible "
@@ -355,11 +382,23 @@ const ProductDetails = () => {
 
               <div className="w-full lg:p-2 lg:max-w-lg ">
 
-               
-                <p className="text-[9px] tracking-[0.28em] uppercase text-[#C9A96E]
-                              font-[family-name:var(--font-sans)] font-medium mb-3">
+
+                <div className="flex justify-between py-2 items-center">
+                                  <p className="text-[9px] tracking-[0.28em] uppercase text-[#C9A96E]
+                              font-[family-name:var(--font-sans)] font-medium ">
                   Product
                 </p>
+                {/* on click -> fill heart */}
+                  <Icons.Heart  
+                  size={20} 
+                  className="cursor-pointer"
+                   />
+
+                   
+                </div>
+
+
+
 
                 {/* Product name */}
                 <h1 className="font-[family-name:var(--font-serif)] font-light
@@ -457,31 +496,25 @@ const ProductDetails = () => {
 
 
 
-                
+
                 <div className="flex flex-col gap-3 mt-4">
                   <ActionButton
                     label={isOutOfStock ? 'Out of Stock' : 'Buy Now'}
                     variant="primary"
-                    disabled={ user?.role === 'seller'  || isOutOfStock || !selectedVariant }
-                    onClick={() =>{ 
+                    disabled={user?.role === 'seller' || isOutOfStock || !selectedVariant}
+                    onClick={() => {
                       console.log('Buy Now:', product._id, selectedVariant)
-                      if( !user){
-                        navigate('/login' , {replace: true})
-                     }
+                      if (!user) {
+                        navigate('/login', { replace: true })
+                      }
                       //  handleBuyNow(product._id, selectedVariant._id)
                     }}
                   />
                   <ActionButton
                     label="Add to Cart"
                     variant="secondary"
-                    disabled={ user?.role === 'seller' ||isOutOfStock || !selectedVariant}
-                    onClick={() => {
-                       if( !user){
-                          navigate('/login' , {replace: true})
-                       }
-                      handleAddToCart(product._id, selectedVariant._id)
-                      console.log('Add to Cart:', product._id, selectedVariant._id)
-                    }}
+                    disabled={user?.role === 'seller' || isOutOfStock || !selectedVariant}
+                    onClick={addToCart}
                   />
                 </div>
 

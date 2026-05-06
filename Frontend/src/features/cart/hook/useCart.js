@@ -27,12 +27,11 @@ export const useCart = () => {
 
   const handleAddToCart = async (productId, variantId, quantity) => {
     try{
-
     const data = await addToCart({ productId, variantId, quantity })
-    console.log(data.message)
+    return { success: true, message: data.message }
 
-    }catch(err){
-      console.log(err)
+    } catch(err){
+     return { success: false, message: err.response.data.message || "Something went wrong" }
     }
 
   }

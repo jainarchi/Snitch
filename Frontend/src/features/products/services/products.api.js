@@ -52,11 +52,3 @@ export async function addProductVariant(productId , formData){
 
 
 
-
-/*
-
-  more varient of product
-  edit product  | reuse create product page coponent
-  seller product | seller can see product details with edit option and buyer number
-  
- */

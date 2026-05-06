@@ -40,9 +40,14 @@ passport.use(new GoogleStrategy({
 import authRouter from './routes/auth.routes.js'
 import productRouter from './routes/product.routes.js'
 import cartRouter from './routes/cart.routes.js'
+import wishlistRouter from './routes/wishlist.routes.js'
+
 
 app.use('/api/auth' , authRouter)
 app.use('/api/products' , productRouter)
 app.use('/api/cart' , cartRouter)
+app.use('/api/wishlist' , wishlistRouter)
+
+
 
 export default app
