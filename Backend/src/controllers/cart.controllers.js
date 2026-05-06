@@ -2,6 +2,7 @@ import cartModel from "../models/cart.model.js";
 import productModel from '../models/product.model.js'
 
 
+
 const addItemToCart = async (req, res) => {
     const { productId, variantId } = req.params
     const { quantity = 1 } = req.body
@@ -42,7 +43,7 @@ const addItemToCart = async (req, res) => {
                 })
             }
 
-            itemInCart.quantity += quantity
+            itemInCart.quantity += quantity   
 
 
         } else {
@@ -208,9 +209,137 @@ const getCartItems = async (req, res) => {
 
 
 
+const incrementCartItemQuantity = async (req, res) => {
+    
+    const { itemId } = req.params
+
+    try{
+        const cart = await cartModel.findOne({ user: req.user.id })
+
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            })
+        }
+
+
+        const item = cart.items.id(itemId)
+        if (!item) {
+            return res.status(404).json({
+                success: false,
+                message: "Item not found in cart"
+            })
+        }
+
+       
+        const product = await productModel.findOne({
+            _id: item.product,
+            "variants._id": item.variant
+        })
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product or variant not found"
+            })
+        }
+
+        const variant = product.variants.id(item.variant)
+        if (!variant) {
+            return res.status(404).json({
+                success: false,
+                message: "Variant not found"
+            })
+        }
+
+        if (item.quantity >= variant.stock) {
+            return res.status(400).json({
+                success: false,
+                message: "No more stock available"
+            })
+        }
+
+
+        item.quantity += 1
+
+        await cart.save()
+
+        res.status(200).json({
+            success: true,
+            message: "Item quantity incremented",
+            cart
+        })
+
+
+    }catch(err){
+        console.log(err)
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+   
+}
+
+
+
+
+const decrementCartItemQuantity = async (req, res) => {
+    const { itemId } = req.params
+
+
+    try{
+        const cart = await cartModel.findOne({ user: req.user.id })
+
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            })
+        }
+
+        const item = cart.items.id(itemId)
+        if (!item) {
+            return res.status(404).json({
+                success: false,
+                message: "Item not found in cart"
+            })
+        }
+
+        if (item.quantity <= 1) {
+            return res.status(400).json({
+                success: false,
+                message: "Quantity cannot be less than 1"
+            })  
+        }
+
+        item.quantity -= 1
+
+        await cart.save()
+        res.status(200).json({
+            success: true,
+            message: "Item quantity decremented",
+            cart
+        })
+
+    }catch(err){
+        console.log(err)
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
+
+
 
 export {
     addItemToCart,
     removeItemFromCart,
-    getCartItems
+    getCartItems,
+    incrementCartItemQuantity, 
+    decrementCartItemQuantity
+   
 }

@@ -20,7 +20,7 @@ export const validateAddToCart = [
 
 
 export const  validateItemId = [
-    param('itemId').isMongoId().withMessage("Invalid product ID format"),
+    param('itemId').isMongoId().withMessage("Invalid item ID format"),
 
     validateRequest
 ]

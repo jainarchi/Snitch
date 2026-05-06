@@ -1,7 +1,7 @@
 import Router from 'express'
 import {authenticateUser} from '../middlewares/auth.middleware.js'
-import { addItemToCart , removeItemFromCart , getCartItems } from '../controllers/cart.controllers.js'
-import { validateAddToCart , validateItemId} from '../validation/cart.validation.js'
+import { addItemToCart , removeItemFromCart , getCartItems , incrementCartItemQuantity , decrementCartItemQuantity } from '../controllers/cart.controllers.js'
+import { validateAddToCart , validateItemId } from '../validation/cart.validation.js'
 
 const router = Router()
 
@@ -39,6 +39,23 @@ router.patch('/remove/:itemId' , authenticateUser , validateItemId , removeItemF
 router.get('/' , authenticateUser , getCartItems )
 
 
+/**
+ * @route PATCH /api/carts/quantity/increment/:itemId
+ * @description Increment quantity of an item in cart
+ * @param  itemId - Item ID of the item to be incremented
+ * @access Private
+ */
+router.patch('/quantity/increment/:itemId' , authenticateUser , validateItemId , incrementCartItemQuantity )
+
+
+/**
+ * @route PATCH /api/carts/quantity/decrement/:itemId
+ * @description Decrement quantity of an item in cart
+ * @param  itemId - Item ID of the item to be decremented
+ * @access Private
+ */
+ 
+router.patch('/quantity/decrement/:itemId' , authenticateUser , validateItemId , decrementCartItemQuantity )
 
 
 
