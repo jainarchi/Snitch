@@ -3,44 +3,33 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useCart } from '../hook/useCart';
 import ItemCart from '../components/ItemCart';
+import { toast } from 'react-toastify';
+
 
 const Cart = () => {
-  const { handleGetCartItems, handleRemoveItem } = useCart();
+  const { handleGetCartItems, handleRemoveItem , handleDecrementCartItemQuantity , handleIncrementCartItemQuantity } = useCart();
   const cartItems = useSelector((state) => state.cart.items);
 
   useEffect(() => {
     handleGetCartItems();
   }, []);
+  
 
-  /* ── Quantity helpers (optimistic update would go here; calling add API) ── */
-  const handleIncrease = async (itemId) => {
-    const item = cartItems.find((i) => i._id === itemId);
-    if (!item) return;
-    // Re-use addToCart to bump quantity by 1
-    try {
-      await import('../services/cart.api').then(({ addToCart }) =>
-        addToCart({ productId: item.product?._id, variantId: item.variant?._id, quantity: 1 })
-      );
-      handleGetCartItems(); // refresh
-    } catch (err) {
-      console.error('Increase failed', err);
-    }
+  const increaseQuantity = async (itemId) => {
+     const res = await handleIncrementCartItemQuantity(itemId)
+     if(! res.success){
+      toast.error(res.message)
+     }
+
   };
 
-  const handleDecrease = async (itemId) => {
-    const item = cartItems.find((i) => i._id === itemId);
-    if (!item || item.quantity <= 1) return;
-    // Same API can be used with negative quantity or you can call your own decrement endpoint
-    // Here we just refresh after attempting the call
-    try {
-      await import('../services/cart.api').then(({ addToCart }) =>
-        addToCart({ productId: item.product?._id, variantId: item.variant?._id, quantity: -1 })
-      );
-      handleGetCartItems();
-    } catch (err) {
-      console.error('Decrease failed', err);
-    }
+  const decreaseQuantity = async (itemId) => {
+     const res = await handleDecrementCartItemQuantity(itemId)
+     if(!res.success){
+      toast.error(res.message)
+     }
   };
+
 
   const totalItems = cartItems.reduce((sum, i) => sum + (i.quantity ?? 1), 0);
   const subtotal = cartItems.reduce(
@@ -52,8 +41,7 @@ const Cart = () => {
   return (
     <div className="min-h-screen bg-[#fbf9f6] text-[#1b1c1a]">
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
-
+      <main className="max-w-6xl mx-auto px-6 py-6">
 
         <header className="mb-14">
           <h1
@@ -92,8 +80,8 @@ const Cart = () => {
                 <ItemCart
                   key={item._id}
                   item={item}
-                  onIncrease={handleIncrease}
-                  onDecrease={handleDecrease}
+                  increaseQuantity={increaseQuantity}
+                  decreaseQuantity={decreaseQuantity}
                   removeItem={handleRemoveItem}
                 />
               ))}

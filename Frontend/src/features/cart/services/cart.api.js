@@ -28,3 +28,18 @@ export async function removeItemFromCart (itemId){
     const response = await cartApi.patch(`/remove/${itemId}`)
     return response.data
 }
+
+
+
+export async function incrementCartItemQuantity(itemId) {
+    const response = await cartApi.patch(`/quantity/increment/${itemId}`)
+    return response.data
+    
+}
+
+
+export async function decrementCartItemQuantity(itemId) {
+    const response = await cartApi.patch(`/quantity/decrement/${itemId}`)
+    return response.data    
+
+}

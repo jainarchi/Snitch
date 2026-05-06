@@ -2,10 +2,10 @@ import React from 'react';
 import Loading from '../../shared/Loading';
 import Icons from '../../shared/Icons/Icons';
 
-const ItemCart = ({ item, onIncrease, onDecrease, removeItem }) => {
+const ItemCart = ({ item, removeItem , increaseQuantity , decreaseQuantity}) => {
   if (!item) return null;
 
-  const { id, product, variant, quantity } = item;
+  const { id, product, variant, quantity  } = item;
 
 
   return (
@@ -69,8 +69,7 @@ const ItemCart = ({ item, onIncrease, onDecrease, removeItem }) => {
 
         <div className="flex items-center gap-0">
           <button
-            id={`cart-decrease-${id}`}
-            onClick={() => onDecrease?.(id)}
+            onClick={() => decreaseQuantity(id)}
             disabled={quantity <= 1}
             className="w-8 h-8 flex items-center justify-center border border-[#d0c5b5] text-[#1b1c1a] text-sm font-medium
                          transition-all duration-300 hover:border-[#745a27] hover:text-[#745a27]
@@ -85,8 +84,9 @@ const ItemCart = ({ item, onIncrease, onDecrease, removeItem }) => {
           </span>
 
           <button
-            id={`cart-increase-${id}`}
-            onClick={() => onIncrease?.(id)}
+            onClick={() => { 
+              console.log('click on +')
+              increaseQuantity(id)}}
             className="w-8 h-8 flex items-center justify-center border border-[#d0c5b5] text-[#1b1c1a] text-sm font-medium
                          transition-all duration-300 hover:border-[#745a27] hover:text-[#745a27]
                          focus:outline-none"
