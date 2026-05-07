@@ -1,4 +1,4 @@
-import { RiDeleteBin6Line , RiMenuFill , RiUser3Line , RiShoppingBag3Line ,RiSearchLine, RiSettings2Line  ,RiShoppingBag4Line , RiMoneyDollarBoxLine  , RiDashboardLine , RiCloseFill , RiLogoutCircleRLine , RiAddLine , RiMapPin2Line , RiHeart3Line  , RiImageUploadLine , RiPokerHeartsFill     } from "@remixicon/react";
+import { RiDeleteBin6Line , RiMenuFill , RiUser3Line , RiShoppingBag3Line ,RiSearchLine, RiSettings2Line  ,RiShoppingBag4Line , RiMoneyDollarBoxLine  , RiDashboardLine , RiCloseFill , RiLogoutCircleRLine , RiAddLine , RiMapPin2Line , RiHeart3Line  , RiImageUploadLine , RiPokerHeartsFill , RiImageLine       } from "@remixicon/react";
 
 const Icons = {
 
@@ -17,7 +17,8 @@ const Icons = {
    Location : RiMapPin2Line ,
    Heart : RiHeart3Line ,
    Upload : RiImageUploadLine,
-   FilledHeart: RiPokerHeartsFill  
+   FilledHeart: RiPokerHeartsFill,
+   Image :RiImageLine    
 
 
 

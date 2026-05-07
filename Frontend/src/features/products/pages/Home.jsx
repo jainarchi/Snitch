@@ -36,18 +36,16 @@ const Home = () => {
   const loading = useSelector((s) => s.products.loading.allProducts)
   const error = useSelector((s) => s.products.error.allProducts)
   const allProducts = useSelector((s) => s.products.allProducts)
-  
+
 
   useEffect(() => {
     handleGetAllProducts()
     return () => { dispatch(clearError('allProducts')) }
   }, [])
 
-  
 
-
-  if(loading ){
-    return( <Loading />)
+  if (loading) {
+    return (<Loading />)
   }
 
 
@@ -63,7 +61,7 @@ const Home = () => {
 
       <div className="bg-[#fbf9f6] text-[#1b1c1a] min-h-screen
                       font-[family-name:var(--font-sans)] selection:bg-[#C9A96E]/30">
-        
+
         <Hero />
 
         {/* ── Collection section ── */}

@@ -16,7 +16,7 @@ import SellerOrder from "../features/seller/pages/Order";
 import { Navigate } from "react-router-dom";
 
 import Cart from "../features/cart/pages/Cart";
-import Wishlist from '../features/products/pages/Wishlist'
+import Wishlist from '../features/wishlist/pages/Wishlist'
 import AppLayout from "./AppLayout";
 
 export const appRouter = createBrowserRouter([

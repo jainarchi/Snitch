@@ -9,8 +9,8 @@ import { useCart } from '../../cart/hook/useCart.js'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import Icons from '../../shared/Icons/Icons.js'
-
-
+import { useWishlist } from '../../wishlist/hook/useWishlist.js'
+import { selectWishlistIds } from '../../wishlist/state/wishlist.slice.js'
 
 /*  Helpers  */
 const formatPrice = (price) => {
@@ -101,6 +101,7 @@ const ProductDetails = () => {
   const navigate = useNavigate()
   const { productId } = useParams()
   const { handleGetProductDetails } = useProducts()
+  const {handleToggleProductInWishlist} = useWishlist()
   const { handleAddToCart } = useCart()
 
   const [product, setProduct] = useState(null)
@@ -109,6 +110,9 @@ const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
   const [activeIdx, setActiveIdx] = useState(0)
+  const user = useSelector(state => state.auth.user)
+
+ 
 
   async function fetchProductDetails() {
     try {
@@ -136,9 +140,34 @@ const ProductDetails = () => {
     }
   }
 
+  
+ // check in set of ids is product in wishlist
+  const wishlistIds = useSelector(selectWishlistIds);
+  const [isWishlisted, setIsWishlisted] = useState(null)
+
+ 
+  
   useEffect(() => {
     fetchProductDetails();
+    setIsWishlisted(wishlistIds.has(productId))
+
   }, [])
+
+
+  const handleToggleFavorite = async (productId) =>{
+      
+      const res = await handleToggleProductInWishlist(productId)
+
+      if(res.success){
+        toast.success(res.message)
+        setIsWishlisted(!isWishlisted)
+      }
+      else {
+        toast.error(res.message)
+      }
+  }
+
+
 
   // Derived state
   const availableColors = useMemo(() => {
@@ -231,7 +260,6 @@ const ProductDetails = () => {
   const currentPrice = selectedVariant?.price || product?.price;
   const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : false;
 
-  const user = useSelector(state => state.auth.user)
 
   return (
     <>
@@ -268,14 +296,14 @@ const ProductDetails = () => {
                            px-4 sm:px-8 lg:px-12 xl:px-16
                            py-8 sm:py-12 lg:py-16 pb-16 sm:pb-20 lg:pb-24">
 
-            <div className="flex flex-col gap-12 lg:flex-row  justify-center  ">
+            <div className="flex flex-col gap-12 md:flex-row justify-center  ">
 
-              <div className="w-full max-w-[24rem] flex flex-col  gap-3">
+              <div className="w-full max-w-[24rem] flex flex-col h-fit md:pt-10 gap-3">
 
 
                 {/*  Main image (4:5) with prev/next arrows  */}
                 <div
-                  className="group relative overflow-hidden order-1 sm:order-2 flex-1 w-full max-w-[22rem] "
+                  className="group relative overflow-hidden flex-1 w-full max-w-[22rem] bg-red-200 "
                   style={{ aspectRatio: '3/4' }}
                 >
                   {/* Image */}
@@ -364,7 +392,7 @@ const ProductDetails = () => {
                 {/*  Thumbnail */}
                 {total > 1 && (
                   <div
-                    className="flex gap-2 order-2 sm:order-1 sm:w-[72px] lg:w-[80px] flex-shrink-0 overflow-x-auto sm:overflow-visible "
+                    className="flex gap-2 sm:w-[72px] lg:w-[80px] flex-shrink-0 overflow-x-auto sm:overflow-visible "
                   >
                     {images.map((img, idx) => (
                       <div key={img._id ?? idx} className="w-16 sm:w-full flex-shrink-0">
@@ -388,12 +416,27 @@ const ProductDetails = () => {
                               font-[family-name:var(--font-sans)] font-medium ">
                   Product
                 </p>
-                {/* on click -> fill heart */}
-                  <Icons.Heart  
-                  size={20} 
-                  className="cursor-pointer"
-                   />
 
+                
+                {user?.role === 'buyer' &&
+                  <span 
+                      onClick={() => handleToggleFavorite(product._id)} >
+                    {
+                     isWishlisted ?  
+                     <Icons.FilledHeart 
+                      size={20}
+                      className='cursor-pointer' 
+                     /> : 
+                      <Icons.Heart  
+                       size={20} 
+                      className="cursor-pointer"
+                      />
+}
+                    
+                  
+                  </span>
+                }
+                 
                    
                 </div>
 
