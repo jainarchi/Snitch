@@ -1,6 +1,6 @@
 import cartModel from "../models/cart.model.js";
 import productModel from '../models/product.model.js'
-
+import mongoose from "mongoose";
 
 
 const addItemToCart = async (req, res) => {
@@ -43,7 +43,7 @@ const addItemToCart = async (req, res) => {
                 })
             }
 
-            itemInCart.quantity += quantity   
+            itemInCart.quantity += quantity
 
 
         } else {
@@ -141,7 +141,98 @@ const removeItemFromCart = async (req, res) => {
 const getCartItems = async (req, res) => {
 
     try {
-        const cart = await cartModel.findOne({ user: req.user.id })
+        let cart = (await cartModel.aggregate(
+            [
+                {
+                    $match: {
+                        user: new mongoose.Types.ObjectId(req.user.id)
+                    }
+                },
+                { $unwind: { path: '$items' } },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'items.product',
+                        foreignField: '_id',
+                        as: 'items.product'
+                    }
+                },
+                { $unwind: { path: '$items.product' } },
+                {
+                    $unwind: { path: '$items.product.variants' }
+                },
+                {
+                    $match: {
+                        $expr: {
+                            $eq: [
+                                '$items.product.variants._id',
+                                '$items.variant'
+                            ]
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        totalPrice: {
+                            amount: {
+                                $multiply: [
+                                    '$items.quantity',
+                                    '$items.product.variants.price.amount'
+                                ]
+                            },
+                            currency:
+                                '$items.product.variants.price.currency'
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$_id',
+                        totalAmount: {
+                            $sum: '$totalPrice.amount'
+                        },
+                        currency: {
+                            $first:
+                                '$items.product.variants.price.currency'
+                        },
+                        items: {
+                            $push: {
+                                _id: '$items._id',
+                                quantity: '$items.quantity',
+                                product: {
+                                    _id: '$items.product._id',
+                                    title: '$items.product.title'
+                                },
+                                variant: {
+                                    _id: '$items.product.variants._id',
+                                    color:
+                                        '$items.product.variants.color',
+                                    size: '$items.product.variants.size',
+                                    price:
+                                        '$items.product.variants.price',
+                                    image: {
+                                        $arrayElemAt: [
+                                            {
+                                                $getField: {
+                                                    field:
+                                                        '$items.product.variants.color',
+                                                    input:
+                                                        '$items.product.imagesByColor'
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                },
+                                totalPrice: '$totalPrice'
+                            }
+                        }
+                    }
+                }
+            ]
+        ))[0];
+
+
 
         if (!cart) {
             return res.status(404).json({
@@ -150,46 +241,10 @@ const getCartItems = async (req, res) => {
             })
         }
 
-
-        const cartItems = await Promise.all(
-
-            cart.items.map(async (item) => {
-
-                const product = await productModel.findById(item.product);
-                if (!product) return null;
-
-                const variant = product.variants.id(item.variant);
-                if (!variant) return null;
-
-                return {
-                    id: item._id,
-
-                    product: {
-                        id: product._id,
-                        title: product.title,
-                    },
-
-                    variant: {
-                        id: variant._id,
-                        color: variant.color,
-                        size: variant.size,
-                        stock: variant.stock,
-                        price: variant.price,
-                        image: product.imagesByColor?.get(variant.color)?.[0]?.url || null
-                    },
-
-                    quantity: item.quantity
-                };
-            })
-        );
-
-
-        console.log(cartItems)  
-
         res.status(200).json({
             success: true,
             message: "Cart items fetched successfully",
-            cartItems   
+            cart
 
         })
     }
@@ -210,10 +265,10 @@ const getCartItems = async (req, res) => {
 
 
 const incrementCartItemQuantity = async (req, res) => {
-    
+
     const { itemId } = req.params
 
-    try{
+    try {
         const cart = await cartModel.findOne({ user: req.user.id })
 
         if (!cart) {
@@ -232,7 +287,7 @@ const incrementCartItemQuantity = async (req, res) => {
             })
         }
 
-       
+
         const product = await productModel.findOne({
             _id: item.product,
             "variants._id": item.variant
@@ -272,14 +327,14 @@ const incrementCartItemQuantity = async (req, res) => {
         })
 
 
-    }catch(err){
+    } catch (err) {
         console.log(err)
         res.status(500).json({
             success: false,
             message: "Internal server error"
         })
     }
-   
+
 }
 
 
@@ -289,7 +344,7 @@ const decrementCartItemQuantity = async (req, res) => {
     const { itemId } = req.params
 
 
-    try{
+    try {
         const cart = await cartModel.findOne({ user: req.user.id })
 
         if (!cart) {
@@ -311,7 +366,7 @@ const decrementCartItemQuantity = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Quantity cannot be less than 1"
-            })  
+            })
         }
 
         item.quantity -= 1
@@ -323,7 +378,7 @@ const decrementCartItemQuantity = async (req, res) => {
             cart
         })
 
-    }catch(err){
+    } catch (err) {
         console.log(err)
         res.status(500).json({
             success: false,
@@ -339,7 +394,7 @@ export {
     addItemToCart,
     removeItemFromCart,
     getCartItems,
-    incrementCartItemQuantity, 
+    incrementCartItemQuantity,
     decrementCartItemQuantity
-   
+
 }

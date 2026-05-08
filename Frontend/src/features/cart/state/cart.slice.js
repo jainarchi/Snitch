@@ -1,27 +1,28 @@
 import {createSlice} from '@reduxjs/toolkit'
-import { incrementCartItemQuantity } from '../services/cart.api'
 
 
 const cartSlice = createSlice({
     name : 'cart' , 
     initialState : {
-        items : []
+       userCart : null ,
+       loading : false
     },
     reducers : {
         setItems : (state , action) => {
-            state.items = action.payload
+            state.userCart = action.payload
         },
 
 
         removeItem : (state , action) => {
-            state.items = state.items.filter(item => {
-                return item.id !== action.payload})
+            state.userCart.items = state.userCart.items.filter(item => {
+                return item._id.toString() !== action.payload.toString()
+            })
         },
 
         incrementItemQuantity : (state , action) =>{
 
-            state.items = state.items.map( item => {
-                if(item.id === action.payload){
+            state.userCart.items = state.userCart.items.map( item => {
+                if(item._id.toString() === action.payload.toString()){
                     return {
                         ...item,
                         quantity : item.quantity + 1
@@ -36,8 +37,8 @@ const cartSlice = createSlice({
 
         decrementItemQuantity : (state , action) =>{
 
-            state.items = state.items.map(item =>{
-                if(item.id === action.payload){
+            state.userCart.items = state.userCart.items.map(item =>{
+                if(item._id.toString() === action.payload.toString()){
                     return {
                         ...item,
                         quantity : item.quantity - 1
@@ -47,6 +48,11 @@ const cartSlice = createSlice({
                     return item
                 }
             })
+        },
+
+
+        setLoading : (state , action) => {
+            state.loading = action.payload
         }
 
 
@@ -57,5 +63,5 @@ const cartSlice = createSlice({
     }
 })
 
-export const {setItems , addItem , removeItem , incrementItemQuantity , decrementItemQuantity} = cartSlice.actions
+export const {setItems , addItem , removeItem , incrementItemQuantity , decrementItemQuantity , setLoading} = cartSlice.actions
 export default cartSlice.reducer

@@ -1,6 +1,6 @@
 import { addToCart, getCartItems, removeItemFromCart, incrementCartItemQuantity, decrementCartItemQuantity } from "../services/cart.api";
 
-import { setItems, removeItem, incrementItemQuantity, decrementItemQuantity } from "../state/cart.slice";
+import { setItems, removeItem, incrementItemQuantity, decrementItemQuantity , setLoading } from "../state/cart.slice";
 import { useDispatch } from "react-redux";
 
 
@@ -11,14 +11,17 @@ export const useCart = () => {
 
 
 
-  const handleGetCartItems = async () => {
+  const handleGetCart = async () => {
    try{
+    dispatch(setLoading(true))
     const data = await getCartItems()
-    dispatch(setItems(data.cartItems))
-    console.log(data.message)
+    dispatch(setItems(data.cart))
    }
     catch(err){
       console.log(err)
+    }
+    finally{
+      dispatch(setLoading(false))
     }
 
   }
@@ -36,14 +39,19 @@ export const useCart = () => {
 
   }
 
+  
   const handleRemoveItem = async (itemId) => {
 
     try{
+      dispatch(setLoading(true))
       const data = await removeItemFromCart(itemId)
       dispatch(removeItem(itemId))
       console.log(data.message)
     }catch(err){
       console.log(err)
+    }
+    finally{
+      dispatch(setLoading(false))
     }
     
   }
@@ -80,7 +88,7 @@ export const useCart = () => {
 
 
   return {
-    handleGetCartItems,
+    handleGetCart,
     handleAddToCart,
     handleRemoveItem,
     handleIncrementCartItemQuantity,

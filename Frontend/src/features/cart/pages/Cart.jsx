@@ -2,41 +2,64 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useCart } from '../hook/useCart';
-import ItemCart from '../components/ItemCart';
+import CartItem from '../components/CartItem';
 import { toast } from 'react-toastify';
+import Loading from '../../shared/Loading';
 
 
 const Cart = () => {
-  const { handleGetCartItems, handleRemoveItem , handleDecrementCartItemQuantity , handleIncrementCartItemQuantity } = useCart();
-  const cartItems = useSelector((state) => state.cart.items);
+
+  const { handleGetCart, handleRemoveItem, handleDecrementCartItemQuantity, handleIncrementCartItemQuantity } = useCart();
+  const cart = useSelector((state) => state.cart.userCart);
+  const loading = useSelector((state) => state.cart.loading);
+
 
   useEffect(() => {
-    handleGetCartItems();
+    handleGetCart();
   }, []);
-  
 
   const increaseQuantity = async (itemId) => {
-     const res = await handleIncrementCartItemQuantity(itemId)
-     if(! res.success){
+    const res = await handleIncrementCartItemQuantity(itemId)
+    if (res.success) {
+      toast.success(res.message)
+    }
+    else {
       toast.error(res.message)
-     }
+    }
+  }
 
-  };
 
   const decreaseQuantity = async (itemId) => {
-     const res = await handleDecrementCartItemQuantity(itemId)
-     if(!res.success){
+    const res = await handleDecrementCartItemQuantity(itemId)
+    if (res.success) {
+      toast.success(res.message)
+    }
+    else {
       toast.error(res.message)
-     }
-  };
+    }
+  }
 
 
-  const totalItems = cartItems.reduce((sum, i) => sum + (i.quantity ?? 1), 0);
-  const subtotal = cartItems.reduce(
-    (sum, item) =>
-      sum + ((item.variant?.price?.amount ?? 0) * (item.quantity ?? 1)),
-    0
-  );
+
+  const calculateSubtotal = (items = []) => {
+    return items.reduce((total, item) => {
+      return total + (
+        item.variant.price.amount * item.quantity
+      )
+    }, 0)
+  }
+  const subtotal = calculateSubtotal(cart?.items)
+
+
+
+
+  if (loading) {
+    return (
+      <Loading />
+    )
+  }
+
+
 
   return (
     <div className="min-h-screen bg-[#fbf9f6] text-[#1b1c1a]">
@@ -54,7 +77,7 @@ const Cart = () => {
           </p>
         </header>
 
-        {cartItems.length === 0 ? (
+        {!cart || cart?.items?.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 gap-6">
             <p
               className="text-3xl text-[#4d463a]"
@@ -71,13 +94,13 @@ const Cart = () => {
             </Link>
           </div>
         ) : (
-          /*  Two-column Layout  */
+
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-12 items-start">
 
             {/*  LEFT: Item List  */}
             <section className="flex flex-col gap-10" aria-label="Cart items">
-              {cartItems.map((item) => (
-                <ItemCart
+              {cart?.items?.map((item) => (
+                <CartItem
                   key={item._id}
                   item={item}
                   increaseQuantity={increaseQuantity}
@@ -103,10 +126,11 @@ const Cart = () => {
               <div className="flex flex-col gap-4 mb-6">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-[Inter] text-[#4d463a]">
-                    Subtotal ({totalItems} {totalItems === 1 ? 'item' : 'items'})
+                    Subtotal
+                    ({cart.items.length} {cart.items.lenght === 1 ? 'item' : 'items'})
                   </span>
                   <span className="text-sm font-medium font-[Inter] text-[#1b1c1a]">
-                    ₹{subtotal.toLocaleString('en-IN')}
+                    ₹{(subtotal).toLocaleString('en-IN')}
                   </span>
                 </div>
 
@@ -130,7 +154,7 @@ const Cart = () => {
                   className="text-2xl font-semibold text-[#1b1c1a]"
                   style={{ fontFamily: "'Cormorant Garamond', serif" }}
                 >
-                  ₹{subtotal.toLocaleString('en-IN')}
+                  ₹{(subtotal).toLocaleString('en-IN')}
                 </span>
               </div>
 
