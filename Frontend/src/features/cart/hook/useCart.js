@@ -1,4 +1,10 @@
-import { addToCart, getCartItems, removeItemFromCart, incrementCartItemQuantity, decrementCartItemQuantity } from "../services/cart.api";
+import { addToCart, 
+  getCartItems, 
+  removeItemFromCart, 
+  incrementCartItemQuantity, 
+  decrementCartItemQuantity , 
+  createCartOrder 
+} from "../services/cart.api";
 
 import { setItems, removeItem, incrementItemQuantity, decrementItemQuantity , setLoading } from "../state/cart.slice";
 import { useDispatch } from "react-redux";
@@ -85,6 +91,21 @@ export const useCart = () => {
 
 
 
+  const handleCreateCartOrder = async () =>{
+    try{
+      const data = await createCartOrder()
+      console.log(data.message)
+      return { success : true , order : data.order}
+
+    }catch(err){
+      console.log(err)
+      return {
+        success : false,
+        message : err.response.data.message || "Something went wrong"
+    }
+    }
+  }
+
 
 
   return {
@@ -92,7 +113,8 @@ export const useCart = () => {
     handleAddToCart,
     handleRemoveItem,
     handleIncrementCartItemQuantity,
-    handleDecrementCartItemQuantity
+    handleDecrementCartItemQuantity,
+    handleCreateCartOrder
 
   }
 

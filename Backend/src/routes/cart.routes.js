@@ -1,6 +1,6 @@
 import Router from 'express'
 import {authenticateUser} from '../middlewares/auth.middleware.js'
-import { addItemToCart , removeItemFromCart , getCartItems , incrementCartItemQuantity , decrementCartItemQuantity } from '../controllers/cart.controllers.js'
+import { addItemToCart , removeItemFromCart , getCartItems , incrementCartItemQuantity , decrementCartItemQuantity , createOrderController } from '../controllers/cart.controllers.js'
 import { validateAddToCart , validateItemId } from '../validation/cart.validation.js'
 
 const router = Router()
@@ -57,6 +57,17 @@ router.patch('/quantity/increment/:itemId' , authenticateUser , validateItemId ,
  
 router.patch('/quantity/decrement/:itemId' , authenticateUser , validateItemId , decrementCartItemQuantity )
 
+
+
+
+/**
+ * @route POST /api/carts/payment/create/order
+ * @description Make a payment
+ * @access Private
+ */
+
+
+router.post('/payment/create/order' , authenticateUser , createOrderController )
 
 
 export default router

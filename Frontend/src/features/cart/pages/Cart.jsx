@@ -5,13 +5,16 @@ import { useCart } from '../hook/useCart';
 import CartItem from '../components/CartItem';
 import { toast } from 'react-toastify';
 import Loading from '../../shared/Loading';
+import { useRazorpay } from "react-razorpay";
 
 
 const Cart = () => {
 
-  const { handleGetCart, handleRemoveItem, handleDecrementCartItemQuantity, handleIncrementCartItemQuantity } = useCart();
+  const { handleGetCart, handleRemoveItem, handleDecrementCartItemQuantity, handleIncrementCartItemQuantity, handleCreateCartOrder } = useCart();
   const cart = useSelector((state) => state.cart.userCart);
   const loading = useSelector((state) => state.cart.loading);
+  const { error, isLoading, Razorpay } = useRazorpay();
+  const user = useSelector((state) => state.auth.user);
 
 
   useEffect(() => {
@@ -49,6 +52,42 @@ const Cart = () => {
     }, 0)
   }
   const subtotal = calculateSubtotal(cart?.items)
+
+
+  const handleCheckoutOrder = async () => {
+    const data = await handleCreateCartOrder();
+
+  
+    if (data.success) {
+      toast.success(data.message)
+
+        const options = {
+      key: 'rzp_test_ShNSkpxt3emQVJ',
+      amount: data.order.amount, 
+      currency: data.order.currency,
+      name: "Test Company",
+      description: "Test Transaction",
+      order_id:  data.order.id ,
+      handler: (response) => {
+        console.log(response);
+        alert("Payment Successful!");
+      },
+      prefill: {
+        name: user?.fullname,
+        email: user?.email,
+        contact: user?.contact,
+      },
+      theme: {
+        color: "#F37254",
+      },
+    };
+    console.log(options)
+
+    }
+    else {
+      toast.error("unable to create order this time")
+    }
+  }
 
 
 
@@ -160,6 +199,7 @@ const Cart = () => {
 
 
               <button
+                onClick={handleCheckoutOrder}
                 id="cart-checkout-btn"
                 className="w-full bg-[#745a27] text-white py-4 px-8 text-sm font-[Inter] tracking-widest uppercase
                            transition-all duration-300 hover:bg-[#5a4312] focus:outline-none focus:ring-2 focus:ring-[#745a27]/50"

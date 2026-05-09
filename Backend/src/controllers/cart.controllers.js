@@ -1,6 +1,7 @@
 import cartModel from "../models/cart.model.js";
 import productModel from '../models/product.model.js'
 import mongoose from "mongoose";
+import {createOrder} from "../services/payment.service.js"
 
 
 const addItemToCart = async (req, res) => {
@@ -389,12 +390,44 @@ const decrementCartItemQuantity = async (req, res) => {
 
 
 
+const createOrderController = async (req , res) =>{
+
+    try{
+       const mockOrder = {
+
+      id: "order_demo_123",
+      amount: 1000,
+      currency: "INR",
+      status: "created"
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Order created successfully",
+      order: mockOrder
+    })
+
+    }
+    catch(err){
+        console.log(err)
+        res.status(500).json({
+            success : false,
+            message : "Internal server error"
+        })
+    }
+
+
+}
+
+
+
 
 export {
     addItemToCart,
     removeItemFromCart,
     getCartItems,
     incrementCartItemQuantity,
-    decrementCartItemQuantity
+    decrementCartItemQuantity,
+    createOrderController
 
 }

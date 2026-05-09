@@ -43,3 +43,10 @@ export async function decrementCartItemQuantity(itemId) {
     return response.data    
 
 }
+
+
+export async function createCartOrder () {
+    const response = await cartApi.post('/payment/create/order')
+    return response.data
+    
+}

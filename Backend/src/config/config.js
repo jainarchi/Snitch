@@ -34,5 +34,7 @@ export const config = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    IMAGE_KIT_PRIVATE_KEY:process.env.IMAGE_KIT_PRIVATE_KEY
+    IMAGE_KIT_PRIVATE_KEY:process.env.IMAGE_KIT_PRIVATE_KEY,
+    RAZORPAY_KEY_ID:process.env.RAZORPAY_KEY_ID || null ,
+    RAZORPAY_KEY_SECRET:process.env.RAZORPAY_KEY_SECRET || null
 }
