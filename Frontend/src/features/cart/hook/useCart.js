@@ -3,7 +3,8 @@ import { addToCart,
   removeItemFromCart, 
   incrementCartItemQuantity, 
   decrementCartItemQuantity , 
-  createCartOrder 
+  createCartOrder,
+  verifyCartOrder 
 } from "../services/cart.api";
 
 import { setItems, removeItem, incrementItemQuantity, decrementItemQuantity , setLoading } from "../state/cart.slice";
@@ -95,7 +96,7 @@ export const useCart = () => {
     try{
       const data = await createCartOrder()
       console.log(data.message)
-      return { success : true , order : data.order}
+      return { success : true , message : data.message,  paymentOrder :data.paymentOrder}
 
     }catch(err){
       console.log(err)
@@ -106,6 +107,30 @@ export const useCart = () => {
     }
   }
 
+
+  const handleVerifyCartOrder = async ({
+    razorpayOrderId,
+    razorpayPaymentId,
+    razorpaySignature,
+  }) => {
+    try {
+      
+      const data = await verifyCartOrder({
+        razorpayOrderId,
+        razorpayPaymentId,
+        razorpaySignature,
+      })
+      
+      console.log(data.message)
+      return { success: true, message: data.message }
+
+    } catch (err) {
+      console.log(err);
+      return {
+        success: false,
+        message: err.response.data.message || "Something went wrong",
+      };
+    }
 
 
   return {

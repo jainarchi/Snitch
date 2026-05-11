@@ -1,8 +1,11 @@
 import cartModel from "../models/cart.model.js";
 import productModel from '../models/product.model.js'
 import mongoose from "mongoose";
-import {createOrder} from "../services/payment.service.js"
-
+import { createMockOrder  } from "../services/payment.service.js"
+import { getCart } from "../dao/cart.dao.js";
+import paymentModel from "../models/payment.model.js";
+import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
+import conifg from '../config/config.js'
 
 const addItemToCart = async (req, res) => {
     const { productId, variantId } = req.params
@@ -88,8 +91,6 @@ const addItemToCart = async (req, res) => {
 
 
 
-
-
 const removeItemFromCart = async (req, res) => {
     const { itemId } = req.params
 
@@ -142,98 +143,7 @@ const removeItemFromCart = async (req, res) => {
 const getCartItems = async (req, res) => {
 
     try {
-        let cart = (await cartModel.aggregate(
-            [
-                {
-                    $match: {
-                        user: new mongoose.Types.ObjectId(req.user.id)
-                    }
-                },
-                { $unwind: { path: '$items' } },
-                {
-                    $lookup: {
-                        from: 'products',
-                        localField: 'items.product',
-                        foreignField: '_id',
-                        as: 'items.product'
-                    }
-                },
-                { $unwind: { path: '$items.product' } },
-                {
-                    $unwind: { path: '$items.product.variants' }
-                },
-                {
-                    $match: {
-                        $expr: {
-                            $eq: [
-                                '$items.product.variants._id',
-                                '$items.variant'
-                            ]
-                        }
-                    }
-                },
-                {
-                    $addFields: {
-                        totalPrice: {
-                            amount: {
-                                $multiply: [
-                                    '$items.quantity',
-                                    '$items.product.variants.price.amount'
-                                ]
-                            },
-                            currency:
-                                '$items.product.variants.price.currency'
-                        }
-                    }
-                },
-                {
-                    $group: {
-                        _id: '$_id',
-                        totalAmount: {
-                            $sum: '$totalPrice.amount'
-                        },
-                        currency: {
-                            $first:
-                                '$items.product.variants.price.currency'
-                        },
-                        items: {
-                            $push: {
-                                _id: '$items._id',
-                                quantity: '$items.quantity',
-                                product: {
-                                    _id: '$items.product._id',
-                                    title: '$items.product.title'
-                                },
-                                variant: {
-                                    _id: '$items.product.variants._id',
-                                    color:
-                                        '$items.product.variants.color',
-                                    size: '$items.product.variants.size',
-                                    price:
-                                        '$items.product.variants.price',
-                                    image: {
-                                        $arrayElemAt: [
-                                            {
-                                                $getField: {
-                                                    field:
-                                                        '$items.product.variants.color',
-                                                    input:
-                                                        '$items.product.imagesByColor'
-                                                }
-                                            },
-                                            0
-                                        ]
-                                    }
-                                },
-                                totalPrice: '$totalPrice'
-                            }
-                        }
-                    }
-                }
-            ]
-        ))[0];
-
-
+        const cart = await getCart(req.user.id)
 
         if (!cart) {
             return res.status(404).json({
@@ -390,34 +300,125 @@ const decrementCartItemQuantity = async (req, res) => {
 
 
 
-const createOrderController = async (req , res) =>{
+const createOrderController = async (req, res) => {
 
-    try{
-       const mockOrder = {
+    try {
+        const cart = await getCart(req.user.id)
 
-      id: "order_demo_123",
-      amount: 1000,
-      currency: "INR",
-      status: "created"
+        if (!cart || cart.items.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            })
+        }
+
+        // check stock
+
+
+        const mockRazorpayOrder = await createMockOrder({ amount: cart.totalAmount, currency: cart.currency })
+
+
+        const payment = await paymentModel.create({
+            user: req.user.id,
+             price: {
+                amount: cart.totalAmount,
+                currency: cart.currency
+            },
+            razorpay: {
+                orderId: mockRazorpayOrder.id,
+            },
+            orderItems: cart.items.map(item => ({
+                productId: item.product._id,
+                variantId: item.variant._id,
+                quantity: item.quantity,
+                price: item.variant.price,
+                image: item.variant.image
+            })),
+           
+        })
+
+
+        res.status(200).json({
+            success: true,
+            message: "Order created successfully",
+            paymentOrder: mockRazorpayOrder,
+        })
+
     }
-
-    res.status(200).json({
-      success: true,
-      message: "Order created successfully",
-      order: mockOrder
-    })
-
-    }
-    catch(err){
+    catch (err) {
         console.log(err)
         res.status(500).json({
-            success : false,
-            message : "Internal server error"
+            success: false,
+            message: "Internal server error"
         })
     }
 
 
 }
+
+
+const verifyOrderController= async (req , res ) =>{
+    const {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature
+    } = req.body
+
+    
+    try{
+        const payment  = await paymentModel.findOne({
+            user : req.user.id,
+            status : "pending",
+            razorpay: {
+                orderId: razorpay_order_id
+            }
+        })
+
+
+        if (!payment) {
+            return res.status(404).json({
+                success: false,
+                message: "Payment not found"
+            })
+        }
+
+        const isPaymentValid  = await validatePaymentVerification({
+           order_id : razorpay_order_id,
+           payment_id: razorpay_payment_id,
+        } , razorpay_signature, config.RAZORPAY_KEY_SECRET )
+
+
+        if (! isPaymentValid) {
+             payment.status = "failed"
+             await payment.save()
+
+             return res.status(400).json({
+                success: false,
+                message: "Payment verification failed"
+            })
+        }
+
+         payment.status = 'paid'
+         payment.razorpay.paymentId = razorpay_payment_id
+         payment.razorpay.signature = razorpay_signature
+
+         await payment.save()
+
+         res.status(200).json({
+            success: true,
+            message: "Payment verified successfully",
+            
+         })
+
+
+    }catch(err){
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+}
+
 
 
 
@@ -428,6 +429,7 @@ export {
     getCartItems,
     incrementCartItemQuantity,
     decrementCartItemQuantity,
-    createOrderController
+    createOrderController,
+    verifyOrderController
 
 }

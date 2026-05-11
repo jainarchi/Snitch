@@ -19,6 +19,8 @@ import Cart from "../features/cart/pages/Cart";
 import Wishlist from '../features/wishlist/pages/Wishlist'
 import AppLayout from "./AppLayout";
 
+import OrderSuccess from "../features/cart/pages/OrderSuccess";
+
 export const appRouter = createBrowserRouter([
 
     {
@@ -45,6 +47,12 @@ export const appRouter = createBrowserRouter([
                     <Wishlist />
                 </Protected>
             },
+            {
+                path: `order-success`,
+                element: <Protected >
+                    <OrderSuccess />
+                </Protected>
+            }
         ]
     },
     {

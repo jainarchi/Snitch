@@ -50,3 +50,19 @@ export async function createCartOrder () {
     return response.data
     
 }
+
+
+export async function verifyCartOrder ({ razorpay_order_id, razorpay_payment_id, razorpay_signature}) {
+    const response = await cartApi.post('/payment/verify/order' , { 
+        razorpay_order_id, 
+        razorpay_payment_id, 
+        razorpay_signature
+    })
+
+    return response.data
+}
+
+
+export async function clearCart () {
+    
+}

@@ -6,20 +6,31 @@ import CartItem from '../components/CartItem';
 import { toast } from 'react-toastify';
 import Loading from '../../shared/Loading';
 import { useRazorpay } from "react-razorpay";
+import { useNavigate } from 'react-router-dom';
 
 
 const Cart = () => {
 
-  const { handleGetCart, handleRemoveItem, handleDecrementCartItemQuantity, handleIncrementCartItemQuantity, handleCreateCartOrder } = useCart();
+  const { handleGetCart, handleRemoveItem, handleDecrementCartItemQuantity, handleIncrementCartItemQuantity, handleCreateCartOrder , handleVerifyCartOrder } = useCart();
+
   const cart = useSelector((state) => state.cart.userCart);
   const loading = useSelector((state) => state.cart.loading);
-  const { error, isLoading, Razorpay } = useRazorpay();
   const user = useSelector((state) => state.auth.user);
+  
+  const navigate = useNavigate()
+
+  const { error, isLoading, Razorpay } = useRazorpay();
+
 
 
   useEffect(() => {
-    handleGetCart();
+    const fetchCart = async () => {
+      await handleGetCart();
+    }
+    fetchCart();
   }, []);
+
+
 
   const increaseQuantity = async (itemId) => {
     const res = await handleIncrementCartItemQuantity(itemId)
@@ -51,37 +62,53 @@ const Cart = () => {
       )
     }, 0)
   }
+
+
   const subtotal = calculateSubtotal(cart?.items)
 
 
   const handleCheckoutOrder = async () => {
     const data = await handleCreateCartOrder();
+    
 
-  
     if (data.success) {
       toast.success(data.message)
 
-        const options = {
-      key: 'rzp_test_ShNSkpxt3emQVJ',
-      amount: data.order.amount, 
-      currency: data.order.currency,
-      name: "Test Company",
-      description: "Test Transaction",
-      order_id:  data.order.id ,
-      handler: (response) => {
-        console.log(response);
-        alert("Payment Successful!");
-      },
-      prefill: {
-        name: user?.fullname,
-        email: user?.email,
-        contact: user?.contact,
-      },
-      theme: {
-        color: "#F37254",
-      },
-    };
-    console.log(options)
+      const options = {
+        key: 'rzp_test_ShNSkpxt3emQVJ',
+        amount: data.paymentOrder.amount,
+        currency: data.paymentOrder.currency,
+        name: "Test Company",
+        description: "Test Transaction",
+        order_id: data.paymentOrder.id,
+        handler: async (response) => {
+            
+            const isValid = await handleVerifyCartOrder(response)
+
+            if(isValid){
+              navigate(`/order-success?order_id=${response?.razorpay_order_id}`)
+            }
+
+
+
+          alert("Payment Successful!");
+        },
+        prefill: {
+          name: user?.fullname,
+          email: user?.email,
+          contact: user?.contact,
+        },
+        theme: {
+          color: "#F37254",
+        },
+      };
+      
+        
+
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+        console.log(options)
 
     }
     else {
@@ -166,7 +193,7 @@ const Cart = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-[Inter] text-[#4d463a]">
                     Subtotal
-                    ({cart.items.length} {cart.items.lenght === 1 ? 'item' : 'items'})
+                    ({cart.items.length} {cart.items.length === 1 ? 'item' : 'items'})
                   </span>
                   <span className="text-sm font-medium font-[Inter] text-[#1b1c1a]">
                     ₹{(subtotal).toLocaleString('en-IN')}
