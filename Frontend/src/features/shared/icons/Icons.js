@@ -1,14 +1,14 @@
-import { RiDeleteBin6Line , RiMenuFill , RiUser3Line , RiShoppingBag3Line ,RiSearchLine, RiSettings2Line  ,RiShoppingBag4Line , RiMoneyDollarBoxLine  , RiDashboardLine , RiCloseFill , RiLogoutCircleRLine , RiAddLine , RiMapPin2Line , RiHeart3Line  , RiImageUploadLine , RiPokerHeartsFill , RiImageLine       } from "@remixicon/react";
+import { RiDeleteBin6Line , RiMenuFill , RiUser3Line , RiShoppingBag3Line ,RiSearchLine, RiSettings2Line  ,RiShoppingBag4Line , RiMoneyDollarBoxLine  , RiDashboardLine , RiCloseFill , RiLogoutCircleRLine , RiAddLine , RiMapPin2Line , RiHeart3Line  , RiImageUploadLine , RiPokerHeartsFill , RiImageLine , RiShoppingCartLine        } from "@remixicon/react";
 
 const Icons = {
 
    Delete : RiDeleteBin6Line,
    Hamburger : RiMenuFill,
    Profile : RiUser3Line  ,
-   Cart :RiShoppingBag3Line  ,
    Search: RiSearchLine,
    Setting :RiSettings2Line,
    Order : RiShoppingBag4Line ,
+   Cart : RiShoppingCartLine  ,
    Revenue : RiMoneyDollarBoxLine ,
    Dashboard: RiDashboardLine,
    Close :RiCloseFill ,

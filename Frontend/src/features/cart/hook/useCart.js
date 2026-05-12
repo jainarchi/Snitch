@@ -1,4 +1,5 @@
-import { addToCart, 
+import { 
+  addToCart, 
   getCartItems, 
   removeItemFromCart, 
   incrementCartItemQuantity, 
@@ -14,6 +15,7 @@ import { useDispatch } from "react-redux";
 
 
 export const useCart = () => {
+
   const dispatch = useDispatch()
 
 
@@ -131,7 +133,7 @@ export const useCart = () => {
         message: err.response.data.message || "Something went wrong",
       };
     }
-
+  }
 
   return {
     handleGetCart,

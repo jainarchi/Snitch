@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { register, login, getMe } from "../service/auth.api";
+import { register, login, getMe , setUserAddresses , deleteUserAddress} from "../service/auth.api";
 import { useDispatch } from "react-redux";
 import { setUser, setLoading, setAddresses, deleteAddress } from "../state/auth.slice";
 
@@ -53,7 +53,7 @@ export const useAuth = () => {
   const handleAddAddress = async ({ label, addressLine, city, state, pincode }) => {
 
     try {
-      const data = await setAddresses({ label, addressLine, city, state, pincode })
+      const data = await setUserAddresses({ label, addressLine, city, state, pincode })
       dispatch(setAddresses(data.addresses))
 
     } catch (err) {
@@ -69,7 +69,7 @@ export const useAuth = () => {
 
   const handleDeleteAddress = async (addressId) => {
     try{
-     await deleteAddress(addressId)
+     await deleteUserAddress(addressId)
      dispatch(deleteAddress(addressId))
      
     }

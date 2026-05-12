@@ -498,8 +498,6 @@ const verifyOrderController = async (req, res) => {
             { session }
         )
 
-        console.log('clear cart from cart page ')
-
         await session.commitTransaction()
         session.endSession()
 

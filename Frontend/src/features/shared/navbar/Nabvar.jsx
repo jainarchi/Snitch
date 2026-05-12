@@ -139,6 +139,18 @@ const Navbar = () => {
 
 
             <Link
+              to="/orders"
+              className="p-2 hover:bg-[#2a2620] rounded-lg transition-all duration-300 hover:scale-110 relative group hidden sm:block
+              "
+              aria-label="Cart"
+            >
+              <Icons.Order size={20} className="text-[#C9A96E]" />
+              <span className="absolute -top-1 -right-1 bg-[#C9A96E] text-[#1a1815] text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                0
+              </span>
+            </Link>
+
+             <Link
               to="/cart"
               className="p-2 hover:bg-[#2a2620] rounded-lg transition-all duration-300 hover:scale-110 relative group"
               aria-label="Cart"
@@ -148,9 +160,6 @@ const Navbar = () => {
                 0
               </span>
             </Link>
-
-
-
 
 
 
@@ -210,8 +219,18 @@ const Navbar = () => {
 
 
               <Link
+                to="/cart"
+                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Icons.Order size={16} /> ORDERS
+              </Link>
+
+
+
+              <Link
                 to="/wishlist"
-                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Icons.Heart size={16} /> WISHLIST
@@ -221,7 +240,7 @@ const Navbar = () => {
 
               <Link
                 to="/profile"
-                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Icons.Profile size={16} /> PROFILE

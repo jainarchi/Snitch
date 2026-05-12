@@ -53,7 +53,7 @@ const router = Router()
 /**
  * @route POST /api/products
  * @description Create a new product by seller only 
- * @access Private
+ * @access private (seller only)
  */
 
 router.post('/' , 
@@ -70,7 +70,7 @@ router.post('/' ,
   /**
    * @route GET /api/products/seller
    * @description Get all products created by seller
-   * @access Private
+   * @access private (seller only)
    */
 
 

@@ -21,7 +21,7 @@ const authSlice = createSlice({
       state.loading = action.payload
     },
 
-    setAddress : (state , action ) =>{
+    setAddresses : (state , action ) =>{
         state.user.addresses = action.payload
     },
 
@@ -36,5 +36,5 @@ const authSlice = createSlice({
 
 
 
-export const { setUser, setError, setLoading , setAddress , deleteAddress } = authSlice.actions;
+export const { setUser, setError, setLoading , setAddresses , deleteAddress } = authSlice.actions;
 export default authSlice.reducer;

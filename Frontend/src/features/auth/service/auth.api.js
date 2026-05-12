@@ -40,13 +40,13 @@ export async function  getMe (){
 }
 
 
-export async function addAddress ({label , addressLine , city , state , pincode}) {
+export async function setUserAddresses ({label , addressLine , city , state , pincode}) {
     const response = await authApi.patch('/address' , {label , addressLine , city , state , pincode})
     return response.data
 }
 
 
-export async function deleteAddress (addressId) {
+export async function deleteUserAddress (addressId) {
     const response = await authApi.delete(`/address/${addressId}`)
     return response.data
 }

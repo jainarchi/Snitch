@@ -20,6 +20,8 @@ import Wishlist from '../features/wishlist/pages/Wishlist'
 import AppLayout from "./AppLayout";
 
 import OrderSuccess from "../features/cart/pages/OrderSuccess";
+import Profile from '../features/auth/pages/Profile'
+import Order from '../features/auth/pages/Order'
 
 export const appRouter = createBrowserRouter([
 
@@ -51,6 +53,18 @@ export const appRouter = createBrowserRouter([
                 path: `order-success`,
                 element: <Protected >
                     <OrderSuccess />
+                </Protected>
+            },
+            {
+                path: '/profile',
+                element: <Protected>
+                    <Profile />
+                </Protected>
+            },
+            {
+                path : 'orders',
+                element : <Protected>
+                    <Order />
                 </Protected>
             }
         ]
