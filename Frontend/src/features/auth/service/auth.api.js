@@ -38,3 +38,15 @@ export async function  getMe (){
     const response = await authApi.get('/me');
     return response.data
 }
+
+
+export async function addAddress ({label , addressLine , city , state , pincode}) {
+    const response = await authApi.patch('/address' , {label , addressLine , city , state , pincode})
+    return response.data
+}
+
+
+export async function deleteAddress (addressId) {
+    const response = await authApi.delete(`/address/${addressId}`)
+    return response.data
+}

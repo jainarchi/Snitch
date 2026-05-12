@@ -13,9 +13,9 @@ const paymentSchema = new mongoose.Schema({
         default: 'pending',
         required: true
     },
-    price: {
+    totalPrice: {
         type: priceSchema,
-        requiered: true
+        required: true
     },
 
     razorpay: {
@@ -43,17 +43,35 @@ const paymentSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 required: true
             },
+            seller :{
+                type : mongoose.Schema.Types.ObjectId,
+                ref : 'user',
+                required : true
+            },
             quantity: {
                 type: Number,
                 required: true
+            },
+            title :{
+                type : String,
+                required : true
             },
             image: {
                 url :{
                 type : String,
                 required : true
                 }
-               
             },
+            size :{
+                type : String,
+                required : true
+
+            },
+            color :{
+                type : String,
+                required : true
+            },
+            // snapshort of variant price at the time of order
             price: {
                 type: priceSchema,
                 required: true

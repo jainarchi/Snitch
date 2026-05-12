@@ -2,21 +2,15 @@ import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
-
-
-
 const tokenInResponse = (user, res, message) => {
-  
-  const token = jwt.sign(
-    { id: user._id }, 
-    config.JWT_SECRET_KEY, 
-    { expiresIn: "7d" }
-  );
+  const token = jwt.sign({ id: user._id }, config.JWT_SECRET_KEY, {
+    expiresIn: "7d",
+  });
 
   res.cookie("token", token, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: config.NODE_ENV === "production" ? "none" : "lax" ,
+    sameSite: config.NODE_ENV === "production" ? "none" : "lax",
     secure: config.NODE_ENV === "production",
   });
 
@@ -31,8 +25,7 @@ const tokenInResponse = (user, res, message) => {
       role: user.role,
     },
   });
-}
-
+};
 
 /**
  * @route POST /api/auth/register
@@ -51,8 +44,8 @@ const registerUser = async (req, res) => {
         message: "User already exists",
       });
     }
-    
-   console.log(isSeller)
+
+    console.log(isSeller);
 
     const user = await userModel.create({
       fullname,
@@ -62,9 +55,7 @@ const registerUser = async (req, res) => {
       role: isSeller ? "seller" : "buyer",
     });
 
-    tokenInResponse(user, res, "User registered successfully")
-
-
+    tokenInResponse(user, res, "User registered successfully");
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -73,13 +64,10 @@ const registerUser = async (req, res) => {
   }
 };
 
-
-
-
-/** 
+/**
  *  @route POST /api/auth/login
  *  @description Login a user
-*/
+ */
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -93,7 +81,7 @@ const loginUser = async (req, res) => {
     }
 
     // if user is registered with google
-    if(user.password === undefined && user.googleId){
+    if (user.password === undefined && user.googleId) {
       return res.status(400).json({
         message: "Invalid credentials",
       });
@@ -104,97 +92,173 @@ const loginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({
         message: "Invalid credentials",
-        
       });
     }
 
-    tokenInResponse(user, res, "Login successful")
-
-
+    tokenInResponse(user, res, "Login successful");
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).json({
       message: "Server error",
-     
-    })
+    });
   }
-}
+};
 
-/** 
+/**
  * continue with google login or register logic
-*/
+ */
 
 const googleCallback = async (req, res) => {
-    const userDetails = req.user
-    // console.log( 'user details :' , userDetails)
+  const userDetails = req.user;
+  // console.log( 'user details :' , userDetails)
 
-    const{id , displayName , emails} = userDetails
+  const { id, displayName, emails } = userDetails;
+
+  let user = await userModel.findOne({
+    email: emails[0].value,
+  });
+
+  if (!user) {
+    user = await userModel.create({
+      fullname: displayName,
+      email: emails[0].value,
+      googleId: id,
+    });
+  }
+
+  const token = jwt.sign({ id: user._id }, config.JWT_SECRET_KEY, {
+    expiresIn: "7d",
+  });
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    sameSite: config.NODE_ENV === "production" ? "none" : "lax",
+    secure: config.NODE_ENV === "production",
+  });
+
+  res.redirect("http://localhost:5173/");
+
+  res.status(200).json({
+    message: "Login successful",
+    user: {
+      fullname: user.fullname,
+      email: user.email,
+      role: user.role,
+    },
+  });
+};
 
 
-     let user = await userModel.findOne({
-        email : emails[0].value
-     })
 
-    if(!user ){
-      user = await userModel.create({
-        fullname : displayName,
-        email : emails[0].value,
-        googleId : id
+
+const getMe = async (req, res) => {
+  const userId = req.user.id;
+
+  const user = await userModel.findById(userId);
+
+  if (!user) {
+    res.status(400).json({
+      message: "Unauthorized",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "User fetched successfully",
+    user,
+  });
+};
+
+
+
+const addAddress = async (req, res) => {
+  const userId = req.user.id;
+  const { label, addressLine, city, state, pincode } = req.body;
+
+  try {
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      res.status(400).json({
+        message: "Unauthorized",
+      });
+    }
+
+    if (user.addresses.length >= 5) {
+      return res.status(400).json({
+        message: "Maximum 5 addresses allowed",
+      });
+    }
+
+    user.addresses.push({ label, addressLine, city, state, pincode });
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Address added successfully",
+      addresses : user.addresses,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+
+const deleteAddress = async (req, res) => {
+  const { addressId } = req.params;
+
+  try {
+    const user = await userModel.findById(req.user.id);
+    
+
+    if(!user){
+      return res.status(400).json({
+        message : "user not found"
       })
     }
 
-    const token = jwt.sign(
-      {id : user._id},
-      config.JWT_SECRET_KEY,
-      {expiresIn : "7d"}
-    )
 
-    res.cookie('token' , token , {
-      httpOnly : true,
-      maxAge : 7 * 24 * 60 * 60 * 1000,
-      sameSite : config.NODE_ENV === "production" ? "none" : "lax" ,
-      secure : config.NODE_ENV === "production"
-    })
+    const address = user.addresses.id(addressId);
 
-    
+    if(!address){
+      return res.status(400).json({
+        message : "Address not found"
+      })
+    }
 
-    res.redirect('http://localhost:5173/'); 
+    user.addresses.pull({_id: addressId});
+    await user.save();
+
 
     res.status(200).json({
-     message : "Login successful",
-     user : {
-      fullname : user.fullname,
-      email : user.email,
-      role : user.role
-     }
+      success: true,
+      message: "Address deleted successfully",
+      
     })
-  };
-
-
-
-  const getMe = async (req , res) =>{
-      const userId = req.user.id;
-
-      const user = await userModel.findById(userId)
-
-      if(!user){
-        res.status(400).json({
-          message : "Unauthorized"
-        })
-      }
-
-      res.status(200).json({
-        success : true,
-        message : "User fetched successfully",
-        user
-      })
-
-  }
-
-
-
-
 
   
 
-export { registerUser  , loginUser , googleCallback , getMe}
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+}
+
+
+
+
+
+export {
+  registerUser,
+  loginUser,
+  googleCallback,
+  getMe,
+  addAddress,
+  deleteAddress,
+};

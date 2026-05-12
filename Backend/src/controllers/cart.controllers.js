@@ -1,11 +1,15 @@
 import cartModel from "../models/cart.model.js";
 import productModel from '../models/product.model.js'
-import mongoose from "mongoose";
-import { createMockOrder  } from "../services/payment.service.js"
-import { getCart } from "../dao/cart.dao.js";
 import paymentModel from "../models/payment.model.js";
+import subOrderModel from "../models/subOrder.model.js";
+import orderModel from '../models/order.model.js'
+import userModel from '../models/user.model.js'
+import mongoose from "mongoose";
+import { createMockOrder } from "../services/payment.service.js"
+import { getCart } from "../dao/cart.dao.js";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
-import conifg from '../config/config.js'
+import { config } from '../config/config.js'
+
 
 const addItemToCart = async (req, res) => {
     const { productId, variantId } = req.params
@@ -249,8 +253,6 @@ const incrementCartItemQuantity = async (req, res) => {
 }
 
 
-
-
 const decrementCartItemQuantity = async (req, res) => {
     const { itemId } = req.params
 
@@ -300,6 +302,12 @@ const decrementCartItemQuantity = async (req, res) => {
 
 
 
+
+/**
+ * @desc create payment with initally pending status And create order by razorpay
+ */
+
+
 const createOrderController = async (req, res) => {
 
     try {
@@ -320,7 +328,7 @@ const createOrderController = async (req, res) => {
 
         const payment = await paymentModel.create({
             user: req.user.id,
-             price: {
+            totalPrice: {
                 amount: cart.totalAmount,
                 currency: cart.currency
             },
@@ -330,11 +338,17 @@ const createOrderController = async (req, res) => {
             orderItems: cart.items.map(item => ({
                 productId: item.product._id,
                 variantId: item.variant._id,
+                title : item.product.title,
+                seller: item.product.seller,
                 quantity: item.quantity,
                 price: item.variant.price,
-                image: item.variant.image
+                image: item.variant.image,
+                color : item.variant.color,
+                size : item.variant.size
+                
+
             })),
-           
+
         })
 
 
@@ -357,67 +371,161 @@ const createOrderController = async (req, res) => {
 }
 
 
-const verifyOrderController= async (req , res ) =>{
+/**
+ * @desc verify order and create user order and seller order
+ */
+
+
+const verifyOrderController = async (req, res) => {
     const {
         razorpay_order_id,
         razorpay_payment_id,
-        razorpay_signature
+        razorpay_signature,
+        addressId
     } = req.body
 
-    
-    try{
-        const payment  = await paymentModel.findOne({
-            user : req.user.id,
-            status : "pending",
-            razorpay: {
-                orderId: razorpay_order_id
-            }
-        })
 
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
+
+    try {
+        const payment = await paymentModel.findOne({
+            user: req.user.id,
+            status: "pending",
+            "razorpay.orderId": razorpay_order_id
+
+        }).session(session)
 
         if (!payment) {
+            await session.abortTransaction()
             return res.status(404).json({
                 success: false,
                 message: "Payment not found"
             })
         }
 
-        const isPaymentValid  = await validatePaymentVerification({
-           order_id : razorpay_order_id,
-           payment_id: razorpay_payment_id,
-        } , razorpay_signature, config.RAZORPAY_KEY_SECRET )
+        const user = await userModel.findById(req.user.id).session(session)
+        const address = user.addresses.id(addressId)
 
-
-        if (! isPaymentValid) {
-             payment.status = "failed"
-             await payment.save()
-
-             return res.status(400).json({
+        if (!address) {
+            await session.abortTransaction()
+            return res.status(404).json({
                 success: false,
-                message: "Payment verification failed"
+                message: "Address not found"
             })
         }
 
-         payment.status = 'paid'
-         payment.razorpay.paymentId = razorpay_payment_id
-         payment.razorpay.signature = razorpay_signature
+        // Mock check
+        const isMock = razorpay_order_id.startsWith('order_') &&
+            razorpay_signature === 'mock_signature'
 
-         await payment.save()
+        if (!isMock) {
+            const isValid = validatePaymentVerification(
+                { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
+                razorpay_signature,
+                config.RAZORPAY_KEY_SECRET
+            )
 
-         res.status(200).json({
+            if (!isValid) {
+                payment.status = 'failed'
+                await payment.save({ session })
+                await session.commitTransaction()
+                session.endSession()
+
+                return res.status(400).json({
+                    success: false,
+                    message: "Payment verification failed"
+                })
+            }
+        }
+
+        payment.status = 'paid'
+        payment.razorpay.paymentId = razorpay_payment_id
+        payment.razorpay.signature = razorpay_signature
+        await payment.save({ session })
+
+
+        const orderId = new mongoose.Types.ObjectId()
+
+
+        const sellerGroups = payment.orderItems.reduce((acc, item) => {
+            const sellerId = item.seller.toString()
+            if (!acc[sellerId]) acc[sellerId] = []
+            acc[sellerId].push(item)
+            return acc
+        }, {})
+
+        console.log("sellerGroups - ", sellerGroups)
+
+        const subOrders = await subOrderModel.create(
+
+            Object.entries(sellerGroups).map(([sellerId, items]) => ({
+                seller: sellerId,
+                user: req.user.id,
+                order: orderId,
+                items,
+                "totalPrice.amount": items.reduce((sum, item) =>
+                    sum + item.price.amount * item.quantity, 0),
+                "totalPrice.currency": items[0].price.currency,
+            })),
+            { session , ordered : true }
+        )
+
+
+        await orderModel.create({
+            _id: orderId,
+            user: req.user.id,
+            payment: payment._id,
+            subOrders: subOrders.map(subOrder => subOrder._id),
+            deliveryAddress: {
+                addressLine: address.addressLine,
+                city: address.city,
+                state: address.state,
+                pincode: address.pincode,
+                label: address.label
+            },
+            price: {
+                amount: payment.totalPrice.amount,
+                currency: payment.totalPrice.currency
+            }
+        })
+
+
+        await cartModel.findOneAndUpdate(
+            { user: req.user.id },
+            { $set: { items: [] } },
+            { session }
+        )
+
+        console.log('clear cart from cart page ')
+
+        await session.commitTransaction()
+        session.endSession()
+
+
+        res.status(200).json({
             success: true,
             message: "Payment verified successfully",
-            
-         })
+            orderId
+        })
 
 
-    }catch(err){
+    }
+    catch (err) {
+        await session.abortTransaction()
+        session.endSession()
+
+        console.log(err)
         res.status(500).json({
             success: false,
             message: "Internal server error"
         })
     }
 }
+
+
+
 
 
 

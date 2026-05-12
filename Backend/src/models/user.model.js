@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcryptjs'
+import addressSchema from "./address.model.js";
 
 const userSchema = new mongoose.Schema({
     fullname :{
@@ -31,8 +32,19 @@ const userSchema = new mongoose.Schema({
     },
     googleId : {
         type : String
+    },
+
+   addresses: {
+    type: [addressSchema],
+    default: [],
+    validate: {
+        validator: function(v) { return v.length <= 5 },
+        message: "Maximum 5 addresses allowed"
     }
+}
 })
+
+
 
 
 userSchema.pre('save' , async function(){

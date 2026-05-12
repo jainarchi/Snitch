@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { register, login, getMe } from "../service/auth.api";
 import { useDispatch } from "react-redux";
-import { setUser, setLoading } from "../state/auth.slice";
+import { setUser, setLoading, setAddresses, deleteAddress } from "../state/auth.slice";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -23,6 +23,8 @@ export const useAuth = () => {
     dispatch(setUser(data.user));
   };
 
+
+  
   const handleLogin = async ({ email, password }) => {
     const data = await login({ email, password });
     dispatch(setUser(data.user));
@@ -36,14 +38,52 @@ export const useAuth = () => {
       const data = await getMe();
       console.log(data)
       dispatch(setUser(data.user));
-      
+
     } catch (err) {
       console.log(err);
-      
+
     } finally {
       dispatch(setLoading(false));
     }
   };
+
+
+
+
+  const handleAddAddress = async ({ label, addressLine, city, state, pincode }) => {
+
+    try {
+      const data = await setAddresses({ label, addressLine, city, state, pincode })
+      dispatch(setAddresses(data.addresses))
+
+    } catch (err) {
+      console.log(err)
+      return {
+        success: false,
+        message: "Something went wrong"
+      }
+    }
+  }
+  
+
+
+  const handleDeleteAddress = async (addressId) => {
+    try{
+     await deleteAddress(addressId)
+     dispatch(deleteAddress(addressId))
+     
+    }
+    catch(err){
+      console.log(err)
+      return {
+        success : false,
+        message : err.response.data.message || "Something went wrong"
+      }
+    }
+  }
+
+
+
 
 
 
@@ -57,5 +97,7 @@ export const useAuth = () => {
     handleRegister,
     handleLogin,
     handleGetMe,
-  };
+    handleAddAddress,
+    handleDeleteAddress
+  }
 };

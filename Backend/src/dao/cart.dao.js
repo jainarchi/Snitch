@@ -64,7 +64,8 @@ export const getCart = async (userId) => {
                             quantity: '$items.quantity',
                             product: {
                                 _id: '$items.product._id',
-                                title: '$items.product.title'
+                                title: '$items.product.title',
+                                seller : "$items.product.seller"
                             },
                             variant: {
                                 _id: '$items.product.variants._id',
@@ -73,6 +74,8 @@ export const getCart = async (userId) => {
                                 size: '$items.product.variants.size',
                                 price:
                                     '$items.product.variants.price',
+
+                                stock: "$items.product.variants.stock",
                                 image: {
                                     $arrayElemAt: [
                                         {
