@@ -43,14 +43,18 @@ import cartRouter from './routes/cart.routes.js'
 import wishlistRouter from './routes/wishlist.routes.js'
 import orderRouter from './routes/order.routes.js'
 import sellerRouter from './routes/seller.routes.js'
+import locationRouter from './routes/location.routes.js'
+import accountRouter from './routes/account.routes.js'
 
 
 app.use('/api/auth' , authRouter)
+app.use('/api/account' , accountRouter)
 app.use('/api/products' , productRouter)
 app.use('/api/cart' , cartRouter)
 app.use('/api/wishlist' , wishlistRouter)
 app.use('/api/orders' , orderRouter)
 app.use('/api/seller' , sellerRouter)
+app.use('/api/location' , locationRouter)
 
 
 

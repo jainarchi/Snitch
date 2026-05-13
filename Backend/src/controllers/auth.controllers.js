@@ -2,6 +2,8 @@ import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
+
+
 const tokenInResponse = (user, res, message) => {
   const token = jwt.sign({ id: user._id }, config.JWT_SECRET_KEY, {
     expiresIn: "7d",
@@ -172,85 +174,6 @@ const getMe = async (req, res) => {
 
 
 
-const addAddress = async (req, res) => {
-  const userId = req.user.id;
-  const { label, addressLine, city, state, pincode } = req.body;
-
-  try {
-    const user = await userModel.findById(userId);
-
-    if (!user) {
-      res.status(400).json({
-        message: "Unauthorized",
-      });
-    }
-
-    if (user.addresses.length >= 5) {
-      return res.status(400).json({
-        message: "Maximum 5 addresses allowed",
-      });
-    }
-
-    user.addresses.push({ label, addressLine, city, state, pincode });
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Address added successfully",
-      addresses : user.addresses,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "Internal server error",
-    });
-  }
-};
-
-
-const deleteAddress = async (req, res) => {
-  const { addressId } = req.params;
-
-  try {
-    const user = await userModel.findById(req.user.id);
-    
-
-    if(!user){
-      return res.status(400).json({
-        message : "user not found"
-      })
-    }
-
-
-    const address = user.addresses.id(addressId);
-
-    if(!address){
-      return res.status(400).json({
-        message : "Address not found"
-      })
-    }
-
-    user.addresses.pull({_id: addressId});
-    await user.save();
-
-
-    res.status(200).json({
-      success: true,
-      message: "Address deleted successfully",
-      
-    })
-
-  
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "Internal server error",
-    });
-  }
-}
-
-
 
 
 
@@ -259,6 +182,5 @@ export {
   loginUser,
   googleCallback,
   getMe,
-  addAddress,
-  deleteAddress,
+
 };

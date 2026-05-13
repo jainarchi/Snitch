@@ -1,6 +1,6 @@
 import {Router} from 'express'
-import {registerUser , loginUser , googleCallback , getMe , addAddress  , deleteAddress } from '../controllers/auth.controllers.js'
-import {validateRegister , validateLogin , validateAddAddress , validateDeleteAddress } from '../validation/auth.validator.js'
+import {registerUser , loginUser , googleCallback , getMe } from '../controllers/auth.controllers.js'
+import {validateRegister , validateLogin  } from '../validation/auth.validator.js'
 import passport from 'passport'
 import { config } from '../config/config.js'
 import {authenticateUser} from '../middlewares/auth.middleware.js'
@@ -71,27 +71,6 @@ router.get('/me' , authenticateUser , getMe )
 //   */
 
 // router.post('/logout' , authenticateUser , logout)
-
-
-
-/**
- * @route PATCH /api/auth/address/add
- * @description Add address
- * @access Private 
- */
-
-router.patch('/address/add' , authenticateUser , validateAddAddress , addAddress)
-
-
-/**
- * @route DELETE /api/auth/address
- * @description delete user address
- * @access Private
- * @param addressId
- */
-
-router.delete('/address/:addressId' , authenticateUser , validateDeleteAddress , deleteAddress)
-
 
 
 

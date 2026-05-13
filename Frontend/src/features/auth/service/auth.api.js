@@ -16,7 +16,6 @@ export async function register ({ fullname, email, password, contact, isSeller =
       contact , 
       isSeller
     })
-
     return response.data
 }
 
@@ -28,7 +27,6 @@ export async function login ({email , password }){
         email , 
         password
     })
-
     return response.data
 }
 
@@ -40,13 +38,3 @@ export async function  getMe (){
 }
 
 
-export async function setUserAddresses ({label , addressLine , city , state , pincode}) {
-    const response = await authApi.patch('/address' , {label , addressLine , city , state , pincode})
-    return response.data
-}
-
-
-export async function deleteUserAddress (addressId) {
-    const response = await authApi.delete(`/address/${addressId}`)
-    return response.data
-}
