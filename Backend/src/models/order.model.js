@@ -9,6 +9,7 @@ const orderSchema = new mongoose.Schema(
             required: true,
         },
         payment: {
+            // order items
             type: mongoose.Schema.Types.ObjectId,
             ref: "payment",
             required: true,

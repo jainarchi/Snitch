@@ -44,3 +44,32 @@ export const validateDeleteAddress = [
 
     validateRequest
 ]
+
+
+
+export const validateSetPassword = [
+    body('password')
+        .notEmpty().withMessage('Password is required')
+        .isLength({ min: 6, max: 10 }).withMessage('Password must be between 6 and 10 characters')
+        .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
+        .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+        .matches(/[0-9]/).withMessage('Password must contain at least one number'),
+
+    validateRequest
+]
+
+
+export const validateChangePassword = [
+    body('currentPassword')
+        .notEmpty().withMessage('Current password is required'),
+
+    body('newPassword')
+        .notEmpty().withMessage('New password is required')
+        .isLength({ min: 6, max: 10 }).withMessage('Password must be between 6 and 10 characters')    
+        .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
+        .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+        .matches(/[0-9]/).withMessage('Password must contain at least one number'),
+
+    validateRequest
+
+]

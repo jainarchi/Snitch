@@ -81,18 +81,21 @@ const deleteAddress = async (req, res) => {
 }
 
 
+
+
 const setPassword = async (req, res) => {
   const userId = req.user.id;
   const { password } = req.body;
 
   try {
-    const user = await userModel.findById(userId);
+    const user = await userModel.findById(userId).select("+password");
 
     if (!user) {
       return res.status(400).json({
         message: "User not found",
       });
     }
+
 
     // Check if user already has a password
     if (user.password) {
@@ -133,7 +136,7 @@ const changePassword = async (req, res) => {
     // Check if user has a password set
     if (!user.password) {
       return res.status(400).json({
-        message: "No password set. Please use set password instead.",
+        message: "No password set. Please set a password instead.",
       });
     }
 

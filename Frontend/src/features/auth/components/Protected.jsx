@@ -12,11 +12,11 @@ const Protected = ({ children, role = 'buyer' }) => {
 
 
 // fetch to set wishlist to make a set of ids
-  useEffect(() => {
-    if (user?.role === "buyer") {
-      handleGetWishlist()
-    }
-  }, [user])
+  // useEffect(() => {
+  //   if (user?.role === "buyer") {
+  //     handleGetWishlist()
+  //   }
+  // }, [user])
 
 
 

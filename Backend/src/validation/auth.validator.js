@@ -1,4 +1,4 @@
-import { validationResult, body  , param } from "express-validator";
+import { validationResult, body, param } from "express-validator";
 
 
 export const validateRequest = (req, res, next) => {
@@ -19,7 +19,11 @@ export const validateRegister = [
         .notEmpty().withMessage("Contact is required")
         .matches(/^\d{10}$/).withMessage("Contact must be a 10-digit number"),
     body("password")
-        .isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
+        .notEmpty().withMessage("Password is required")
+        .isLength({ min: 6, max: 10 }).withMessage("Password must be between 6 and 10 characters")
+        .matches(/[a-z]/).withMessage("Password must contain at least one lowercase letter")
+        .matches(/[A-Z]/).withMessage("Password must contain at least one uppercase letter")
+        .matches(/[0-9]/).withMessage("Password must contain at least one number"),
     body("fullname")
         .notEmpty().withMessage("Full name is required")
         .isLength({ min: 3 }).withMessage("Full name must be at least 3 characters long"),

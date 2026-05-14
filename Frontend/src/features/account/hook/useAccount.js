@@ -57,10 +57,9 @@ export const useAccount = () => {
           message : "Password set successfully"
         }
       }catch(err){
-        console.log(err.response.data.message || err.message)
         return {
           success : false,
-          message : "Something went wrong"
+          message : err.response.data.message || "Something went wrong"
         }
       }
 
@@ -79,7 +78,7 @@ export const useAccount = () => {
       console.log(err)
       return {
         success : false,
-        message : "Something went wrong"
+        message : err.response.data.message || "Something went wrong"
       }
     }
 

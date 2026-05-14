@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticateUser } from "../middlewares/auth.middleware.js";
 import {addAddress  , deleteAddress, setPassword, changePassword} from '../controllers/account.controllers.js'
-import { validateAddAddress, validateDeleteAddress } from "../validation/account.validator.js";
+import { validateAddAddress, validateDeleteAddress , validateSetPassword , validateChangePassword } from "../validation/account.validator.js";
 const router = Router()
 
 
@@ -30,7 +30,7 @@ router.delete('/address/:addressId' , authenticateUser , validateDeleteAddress ,
  * @access Private
  */
 
-router.post('/set-password', authenticateUser, setPassword)
+router.post('/set-password', authenticateUser, validateSetPassword, setPassword)
 
 
 /**
@@ -40,7 +40,7 @@ router.post('/set-password', authenticateUser, setPassword)
  */
 
 
-router.post('/change-password', authenticateUser, changePassword)
+router.post('/change-password', authenticateUser, validateChangePassword ,  changePassword)
 
 
 

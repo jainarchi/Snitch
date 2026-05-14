@@ -1,7 +1,6 @@
-import { useEffect } from "react";
-import { register, login, getMe , setUserAddresses , deleteUserAddress} from "../service/auth.api";
+import { register, login, getMe } from "../service/auth.api";
 import { useDispatch } from "react-redux";
-import { setUser, setLoading, setAddresses, deleteAddress } from "../state/auth.slice";
+import { setUser, setLoading } from "../state/auth.slice";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -50,46 +49,6 @@ export const useAuth = () => {
 
 
 
-  const handleAddAddress = async ({ label, addressLine, city, state, pincode }) => {
-
-    try {
-      const data = await setUserAddresses({ label, addressLine, city, state, pincode })
-      dispatch(setAddresses(data.addresses))
-
-    } catch (err) {
-      console.log(err)
-      return {
-        success: false,
-        message: "Something went wrong"
-      }
-    }
-  }
-  
-
-
-  const handleDeleteAddress = async (addressId) => {
-    try{
-     await deleteUserAddress(addressId)
-     dispatch(deleteAddress(addressId))
-     
-    }
-    catch(err){
-      console.log(err)
-      return {
-        success : false,
-        message : err.response.data.message || "Something went wrong"
-      }
-    }
-  }
-
-
-
-
-
-
-  useEffect(() => {
-    handleGetMe();
-  }, []);
 
 
 
@@ -97,7 +56,5 @@ export const useAuth = () => {
     handleRegister,
     handleLogin,
     handleGetMe,
-    handleAddAddress,
-    handleDeleteAddress
   }
 };

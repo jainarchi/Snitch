@@ -1,11 +1,18 @@
-import React from 'react'
+import React , {useEffect} from 'react'
 import { appRouter } from './app.routes'
 import { RouterProvider } from 'react-router-dom'
 import { useAuth } from '../features/auth/hook/useAuth'
 import { ToastContainer } from "react-toastify";
 
 const App = () => {
-  useAuth()
+ const {handleGetMe} = useAuth()
+
+  useEffect(() => {
+    handleGetMe();
+  }, []);
+
+
+
 
   return (
     <>
