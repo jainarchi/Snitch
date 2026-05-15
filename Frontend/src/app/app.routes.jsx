@@ -21,7 +21,10 @@ import AppLayout from "./AppLayout";
 
 import OrderSuccess from "../features/cart/pages/OrderSuccess";
 import UserProfile from '../features/account/pages/UserProfile'
-import Order from '../features/account/pages/Order'
+import Order from '../features/order/pages/Order'
+import OrderDetails from '../features/order/pages/OrderDetails'
+
+
 
 export const appRouter = createBrowserRouter([
 
@@ -65,6 +68,12 @@ export const appRouter = createBrowserRouter([
                 path : 'orders',
                 element : <Protected>
                     <Order />
+                </Protected>
+            },
+            {
+                path : 'orders/:orderId',
+                element : <Protected>
+                    <OrderDetails />
                 </Protected>
             }
         ]

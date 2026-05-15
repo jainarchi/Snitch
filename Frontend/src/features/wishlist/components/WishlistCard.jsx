@@ -1,24 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icons from "../../shared/icons/Icons";
-
-/*  Helpers  */
-const formatPrice = (price) => {
-  if (!price) return "—";
-
-  const sym =
-    price.currency === "INR"
-      ? "₹"
-      : price.currency === "USD"
-      ? "$"
-      : price.currency === "EUR"
-      ? "€"
-      : price.currency === "GBP"
-      ? "£"
-      : price.currency;
-
-  return `${sym}${Number(price.amount).toLocaleString("en-IN")}`;
-};
+import { formatPrice } from "../../shared/utils/formatPrice";
 
 const WishlistCard = ({
   product,

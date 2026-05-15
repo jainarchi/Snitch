@@ -1,4 +1,4 @@
-import { RiDeleteBin6Line , RiMenuFill , RiUser3Line , RiShoppingBag3Line ,RiSearchLine, RiSettings2Line  ,RiShoppingBag4Line , RiMoneyDollarBoxLine  , RiDashboardLine , RiCloseFill , RiLogoutCircleRLine , RiAddLine , RiMapPin2Line , RiHeart3Line  , RiImageUploadLine , RiPokerHeartsFill , RiImageLine , RiShoppingCartLine , RiHomeHeartLine , RiEyeLine } from "@remixicon/react";
+import { RiDeleteBin6Line , RiMenuFill , RiUser3Line , RiShoppingBag3Line ,RiSearchLine, RiSettings2Line  ,RiShoppingBag4Line , RiMoneyDollarBoxLine  , RiDashboardLine , RiCloseFill , RiLogoutCircleRLine , RiAddLine , RiMapPin2Line , RiHeart3Line  , RiImageUploadLine , RiPokerHeartsFill , RiImageLine , RiShoppingCartLine , RiHomeHeartLine , RiEyeLine , RiFileList3Line , RiCheckboxCircleLine , RiInboxArchiveLine , RiTruckLine , RiHomeSmileLine } from "@remixicon/react";
 
 const Icons = {
 
@@ -20,8 +20,12 @@ const Icons = {
    FilledHeart: RiPokerHeartsFill,
    Image :RiImageLine ,
    Home : RiHomeHeartLine,
-   eye : RiEyeLine
-
+   eye : RiEyeLine,
+   Pending: RiFileList3Line,
+   Confirmed: RiCheckboxCircleLine,
+  Processing: RiInboxArchiveLine,
+  Shipped: RiTruckLine,
+  Delivered: RiHomeSmileLine,
 
 
 }

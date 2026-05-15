@@ -56,22 +56,10 @@ const Navbar = () => {
                 className="text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] relative group transition-colors duration-200"
               >
                 COLLECTIONS
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#C9A96E] group-hover:w-full transition-all duration-500"></span>
+                <span className="absolute bottom-[-2px] left-0 w-0 h-0.5  bg-[#C9A96E] group-hover:w-full transition-all duration-500"></span>
               </Link>
-              <Link
-                to="/archives"
-                className="text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] relative group transition-colors duration-200"
-              >
-                ARCHIVES
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#C9A96E] group-hover:w-full transition-all duration-500"></span>
-              </Link>
-              <Link
-                to="/story"
-                className="text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] relative group transition-colors duration-200"
-              >
-                STORY
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#C9A96E] group-hover:w-full transition-all duration-500"></span>
-              </Link>
+             
+              
             </div>
           ) : (
             <div className=" absolute top-14 z-50 left-0 w-[90%] bg-white md:bg-transparent px-4 sm:px-6 lg:px-8 md:static flex items-center flex-1 ml-8 gap-4 h-16 " onClick={(e) => e.stopPropagation()}>
@@ -190,37 +178,22 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-[#C9A96E]/20 py-4 animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="flex flex-col gap-4">
-              <Link
-                to="/collections"
-                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors relative group"
+            <div className="flex flex-col">
+             
+               <Link
+                to="/"
+                className="px-4 py-4 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                COLLECTIONS
-                <span className="absolute bottom-1 left-4 w-0 h-0.5 bg-[#C9A96E] group-hover:w-12 transition-all duration-500"></span>
+                <Icons.Home size={20} /> COLLECTION
               </Link>
-              <Link
-                to="/archives"
-                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors relative group"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                ARCHIVES
-                <span className="absolute bottom-1 left-4 w-0 h-0.5 bg-[#C9A96E] group-hover:w-12 transition-all duration-500"></span>
-              </Link>
-              <Link
-                to="/story"
-                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors relative group"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                STORY
-                <span className="absolute bottom-1 left-4 w-0 h-0.5 bg-[#C9A96E] group-hover:w-8 transition-all duration-500"></span>
-              </Link>
+       
 
 
 
               <Link
                 to="/cart"
-                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
+                className="px-4 py-4 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Icons.Order size={16} /> ORDERS
@@ -230,7 +203,7 @@ const Navbar = () => {
 
               <Link
                 to="/wishlist"
-                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
+                className="px-4 py-4 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Icons.Heart size={16} /> WISHLIST
@@ -240,7 +213,7 @@ const Navbar = () => {
 
               <Link
                 to="/profile"
-                className="px-4 py-2 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
+                className="px-4 py-4 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Icons.Profile size={16} /> PROFILE

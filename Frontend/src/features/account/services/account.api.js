@@ -44,3 +44,4 @@ export async function getCities(state){
     const response = await api.get(`/location/cities/${encodeURIComponent(state)}`)
     return response.data
 }
+
