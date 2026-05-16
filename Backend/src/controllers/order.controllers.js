@@ -70,9 +70,6 @@ const getOrders = async (req, res) => {
 
 
 
-
-
-
 const getOrderDetails = async (req, res) => {
     const {orderId} = req.params
     try{

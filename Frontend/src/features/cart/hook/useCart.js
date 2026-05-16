@@ -1,14 +1,14 @@
-import { 
-  addToCart, 
-  getCartItems, 
-  removeItemFromCart, 
-  incrementCartItemQuantity, 
-  decrementCartItemQuantity , 
+import {
+  addToCart,
+  getCartItems,
+  removeItemFromCart,
+  incrementCartItemQuantity,
+  decrementCartItemQuantity,
   createCartOrder,
-  verifyCartOrder 
+  verifyCartOrder
 } from "../services/cart.api";
 
-import { setItems, removeItem, incrementItemQuantity, decrementItemQuantity , setLoading } from "../state/cart.slice";
+import { setItems, removeItem, incrementItemQuantity, decrementItemQuantity, setLoading } from "../state/cart.slice";
 import { useDispatch } from "react-redux";
 
 
@@ -21,15 +21,15 @@ export const useCart = () => {
 
 
   const handleGetCart = async () => {
-   try{
-    dispatch(setLoading(true))
-    const data = await getCartItems()
-    dispatch(setItems(data.cart))
-   }
-    catch(err){
+    try {
+      dispatch(setLoading(true))
+      const data = await getCartItems()
+      dispatch(setItems(data.cart))
+    }
+    catch (err) {
       console.log(err)
     }
-    finally{
+    finally {
       dispatch(setLoading(false))
     }
 
@@ -38,42 +38,42 @@ export const useCart = () => {
 
 
   const handleAddToCart = async (productId, variantId, quantity) => {
-    try{
-    const data = await addToCart({ productId, variantId, quantity })
-    return { success: true, message: data.message }
+    try {
+      const data = await addToCart({ productId, variantId, quantity })
+      return { success: true, message: data.message }
 
-    } catch(err){
-     return { success: false, message: err.response.data.message || "Something went wrong" }
+    } catch (err) {
+      return { success: false, message: err.response.data.message || "Something went wrong" }
     }
 
   }
 
-  
+
   const handleRemoveItem = async (itemId) => {
 
-    try{
+    try {
       dispatch(setLoading(true))
       const data = await removeItemFromCart(itemId)
       dispatch(removeItem(itemId))
       console.log(data.message)
-    }catch(err){
+    } catch (err) {
       console.log(err)
     }
-    finally{
+    finally {
       dispatch(setLoading(false))
     }
-    
+
   }
 
 
 
   const handleIncrementCartItemQuantity = async (itemId) => {
     try {
-     const data = await incrementCartItemQuantity(itemId)
+      const data = await incrementCartItemQuantity(itemId)
       dispatch(incrementItemQuantity(itemId))
-      return {success : true , message : data.message}
+      return { success: true, message: data.message }
     } catch (err) {
-      return {success : false , message : err.response.data.message || "Something went wrong"}
+      return { success: false, message: err.response.data.message || "Something went wrong" }
     }
 
 
@@ -83,46 +83,48 @@ export const useCart = () => {
   const handleDecrementCartItemQuantity = async (itemId) => {
 
     try {
-       const data =await decrementCartItemQuantity(itemId)
+      const data = await decrementCartItemQuantity(itemId)
       dispatch(decrementItemQuantity(itemId))
-      return {success : true , message : data.message}
+      return { success: true, message: data.message }
     } catch (err) {
-      return {success : false , message : err.response.data.message || "Something went wrong"}
+      return { success: false, message: err.response.data.message || "Something went wrong" }
     }
 
   }
 
 
 
-  const handleCreateCartOrder = async () =>{
-    try{
+  const handleCreateCartOrder = async () => {
+    try {
       const data = await createCartOrder()
-      console.log(data.message)
-      return { success : true , message : data.message,  paymentOrder :data.paymentOrder}
+      console.log(data.message, data)
+      return { success: true, message: data.message, paymentOrder: data.paymentOrder }
 
-    }catch(err){
+    } catch (err) {
       console.log(err)
       return {
-        success : false,
-        message : err.response.data.message || "Something went wrong"
-    }
+        success: false,
+        message: err.response.data.message || "Something went wrong"
+      }
     }
   }
 
 
   const handleVerifyCartOrder = async ({
-    razorpayOrderId,
-    razorpayPaymentId,
-    razorpaySignature,
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    addressId
   }) => {
     try {
-      
+
       const data = await verifyCartOrder({
-        razorpayOrderId,
-        razorpayPaymentId,
-        razorpaySignature,
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        addressId
       })
-      
+
       console.log(data.message)
       return { success: true, message: data.message }
 
@@ -135,13 +137,18 @@ export const useCart = () => {
     }
   }
 
+
+
+
+
   return {
     handleGetCart,
     handleAddToCart,
     handleRemoveItem,
     handleIncrementCartItemQuantity,
     handleDecrementCartItemQuantity,
-    handleCreateCartOrder
+    handleCreateCartOrder,
+    handleVerifyCartOrder
 
   }
 

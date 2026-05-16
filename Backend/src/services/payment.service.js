@@ -20,17 +20,3 @@ export const createOrder = async ({ amount, currency = 'INR' }) => {
 
 }
 
-
-export const createMockOrder  = async ({ amount, currency = 'INR' }) => {
-
-    const mockRazorpayOrder = {
-        id: "order_" + Date.now(),
-        amount: amount * 100,
-        currency: currency,
-        status: "created"
-
-
-    }
-    return mockRazorpayOrder
-
-}

@@ -2,7 +2,7 @@ import React from 'react'
 import { formatPrice } from '../../shared/utils/formatPrice'
 
 
-const ProductCard = ({ product, onClick }) => {
+const ProductCard = ({ product, onClick, isPriority }) => {
 
   return (
     <div
@@ -16,6 +16,9 @@ const ProductCard = ({ product, onClick }) => {
           <img
             src={product.image}
             alt={product.title || 'Product'}
+            loading={isPriority ? "eager" : "lazy"}        
+            decoding={isPriority ? "sync" : "async"}        
+            fetchPriority={isPriority ? "high" : "low"}
             className="w-full h-full object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-102"
             
           />

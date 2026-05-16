@@ -11,19 +11,9 @@ import { toast } from 'react-toastify'
 import Icons from '../../shared/Icons/Icons.js'
 import { useWishlist } from '../../wishlist/hook/useWishlist.js'
 import { selectWishlistIds } from '../../wishlist/state/wishlist.slice.js'
+import { formatPrice } from '../../shared/utils/formatPrice.js'
+import Wishlist from '../../wishlist/pages/Wishlist.jsx'
 
-/*  Helpers  */
-const formatPrice = (price) => {
-
-  if (!price) return '—'
-  const sym =
-    price.currency === 'INR' ? '₹'
-      : price.currency === 'USD' ? '$'
-        : price.currency === 'EUR' ? '€'
-          : price.currency === 'GBP' ? '£'
-            : price.currency
-  return `${sym}${Number(price.amount).toLocaleString('en-IN')}`
-}
 
 const formatDate = (iso) => {
   if (!iso) return ''
@@ -149,9 +139,13 @@ const ProductDetails = () => {
   
   useEffect(() => {
     fetchProductDetails();
-    setIsWishlisted(wishlistIds.has(productId))
-
   }, [])
+
+  useEffect(() => {
+    setIsWishlisted(wishlistIds.has(productId))
+  
+  }, [wishlistIds , productId])
+  
 
 
   const handleToggleFavorite = async (productId) =>{
@@ -429,7 +423,7 @@ const ProductDetails = () => {
                      /> : 
                       <Icons.Heart  
                        size={20} 
-                      className="cursor-pointer"
+                       className="cursor-pointer"
                       />
 }
                     

@@ -1,5 +1,4 @@
 import { createSlice , createSelector } from "@reduxjs/toolkit";
-import { addProductVariant } from "../../products/services/products.api";
 
 
 const wishlistSlice = createSlice({
@@ -23,13 +22,24 @@ const wishlistSlice = createSlice({
             state.loading = action.payload
         },
 
+        toggleWishlist : (state , action) => {
+            const index = state.items.indexOf(action.payload)
+            if(index > -1){
+                state.items.splice(index , 1)
+            }else{
+                state.items.push(action.payload)
+            }
+        }
+
+
+
         
         
     }
 })
 
 
-export const {setWishlist , removeFromWishlist , setLoading} = wishlistSlice.actions
+export const {setWishlist , removeFromWishlist , setLoading , toggleWishlist} = wishlistSlice.actions
 export default wishlistSlice.reducer
 
 

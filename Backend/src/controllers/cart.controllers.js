@@ -5,7 +5,7 @@ import subOrderModel from "../models/subOrder.model.js";
 import orderModel from '../models/order.model.js'
 import userModel from '../models/user.model.js'
 import mongoose from "mongoose";
-import { createMockOrder } from "../services/payment.service.js"
+import { createOrder } from "../services/payment.service.js"
 import { getCart } from "../dao/cart.dao.js";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
 import { config } from '../config/config.js'
@@ -304,7 +304,7 @@ const decrementCartItemQuantity = async (req, res) => {
 
 
 /**
- * @desc create payment with initally pending status And create order by razorpay
+ * @desc create payment with initally status pending And create order by razorpay
  */
 
 
@@ -323,8 +323,8 @@ const createOrderController = async (req, res) => {
         // check stock
 
 
-        const mockRazorpayOrder = await createMockOrder({ amount: cart.totalAmount, currency: cart.currency })
-
+        const razorpayOrder = await createOrder({ amount: cart.totalAmount, currency: cart.currency })
+    
 
         const payment = await paymentModel.create({
             user: req.user.id,
@@ -333,19 +333,19 @@ const createOrderController = async (req, res) => {
                 currency: cart.currency
             },
             razorpay: {
-                orderId: mockRazorpayOrder.id,
+                orderId: razorpayOrder.id,
             },
             orderItems: cart.items.map(item => ({
                 productId: item.product._id,
                 variantId: item.variant._id,
-                title : item.product.title,
+                title: item.product.title,
                 seller: item.product.seller,
                 quantity: item.quantity,
                 price: item.variant.price,
                 image: item.variant.image,
-                color : item.variant.color,
-                size : item.variant.size
-                
+                color: item.variant.color,
+                size: item.variant.size
+
 
             })),
 
@@ -355,7 +355,7 @@ const createOrderController = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Order created successfully",
-            paymentOrder: mockRazorpayOrder,
+            paymentOrder: razorpayOrder,
         })
 
     }
@@ -416,29 +416,27 @@ const verifyOrderController = async (req, res) => {
             })
         }
 
-        // Mock check
-        const isMock = razorpay_order_id.startsWith('order_') &&
-            razorpay_signature === 'mock_signature'
 
-        if (!isMock) {
-            const isValid = validatePaymentVerification(
-                { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
-                razorpay_signature,
-                config.RAZORPAY_KEY_SECRET
-            )
 
-            if (!isValid) {
-                payment.status = 'failed'
-                await payment.save({ session })
-                await session.commitTransaction()
-                session.endSession()
 
-                return res.status(400).json({
-                    success: false,
-                    message: "Payment verification failed"
-                })
-            }
+        const isValid = validatePaymentVerification(
+            { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
+            razorpay_signature,
+            config.RAZORPAY_KEY_SECRET
+        )
+
+        if (!isValid) {
+            payment.status = 'failed'
+            await payment.save({ session })
+            await session.commitTransaction()
+            session.endSession()
+
+            return res.status(400).json({
+                success: false,
+                message: "Payment verification failed"
+            })
         }
+
 
         payment.status = 'paid'
         payment.razorpay.paymentId = razorpay_payment_id
@@ -456,7 +454,6 @@ const verifyOrderController = async (req, res) => {
             return acc
         }, {})
 
-        console.log("sellerGroups - ", sellerGroups)
 
         const subOrders = await subOrderModel.create(
 
@@ -469,7 +466,7 @@ const verifyOrderController = async (req, res) => {
                     sum + item.price.amount * item.quantity, 0),
                 "totalPrice.currency": items[0].price.currency,
             })),
-            { session , ordered : true }
+            { session, ordered: true }
         )
 
 

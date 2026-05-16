@@ -1,29 +1,35 @@
-import { createBrowserRouter } from "react-router-dom";
-import Register from "../features/auth/pages/Register";
-import Login from "../features/auth/pages/Login";
-import ProductDetails from "../features/products/pages/ProductDetails";
-import CreateProduct from "../features/products/pages/CreateProduct";
-import Protected from "../features/auth/components/Protected";
-import Home from "../features/products/pages/Home";
+import {lazy } from 'react'
+import {createBrowserRouter , Navigate} from 'react-router-dom'
 
-import SellerDashboard from "../features/seller/layout/Dashboard";
-import SellerDashboardOverview from "../features/seller/pages/Overview";
-import EditProductDetails from "../features/seller/pages/EditProductDetails";
-import SellerSetting from "../features/seller/pages/Setting";
-import SellerRevenue from "../features/seller/pages/Revenue";
-import SellerProducts from "../features/seller/pages/Products";
-import SellerOrder from "../features/seller/pages/Order";
-import { Navigate } from "react-router-dom";
 
-import Cart from "../features/cart/pages/Cart";
-import Wishlist from '../features/wishlist/pages/Wishlist'
-import AppLayout from "./AppLayout";
 
-import OrderSuccess from "../features/cart/pages/OrderSuccess";
-import UserProfile from '../features/account/pages/UserProfile'
-import Order from '../features/order/pages/Order'
-import OrderDetails from '../features/order/pages/OrderDetails'
+const Register = lazy(() => import("../features/auth/pages/Register"));
+const Login = lazy(() => import("../features/auth/pages/Login"));
 
+const ProductDetails = lazy(() => import("../features/products/pages/ProductDetails"));
+const CreateProduct = lazy(() => import("../features/products/pages/CreateProduct"));
+const Home = lazy(() => import("../features/products/pages/Home"));
+
+const SellerDashboard = lazy(() => import("../features/seller/layout/Dashboard"));
+const SellerDashboardOverview = lazy(() => import("../features/seller/pages/Overview"));
+const EditProductDetails = lazy(() => import("../features/seller/pages/EditProductDetails"));
+const SellerSetting = lazy(() => import("../features/seller/pages/Setting"));
+const SellerRevenue = lazy(() => import("../features/seller/pages/Revenue"));
+const SellerProducts = lazy(() => import("../features/seller/pages/Products"));
+const SellerOrder = lazy(() => import("../features/seller/pages/Order"));
+
+const Cart = lazy(() => import("../features/cart/pages/Cart"));
+const Wishlist = lazy(() => import("../features/wishlist/pages/Wishlist"));
+
+const OrderSuccess = lazy(() => import("../features/cart/pages/OrderSuccess"));
+
+const UserProfile = lazy(() => import("../features/account/pages/UserProfile"));
+
+const Order = lazy(() => import("../features/order/pages/Order"));
+const OrderDetails = lazy(() => import("../features/order/pages/OrderDetails"));
+
+import AppLayout from './AppLayout';
+import Protected from '../features/auth/components/Protected';
 
 
 export const appRouter = createBrowserRouter([

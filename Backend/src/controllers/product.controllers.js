@@ -179,8 +179,7 @@ const createVariants = async (req, res) => {
 
 
 
-// get all products made by seller
-
+// get all products created by seller
 
 const getAllProductsBySeller = async (req, res) => {
   try {
@@ -218,6 +217,8 @@ const getAllProductsBySeller = async (req, res) => {
   }
 }
 
+
+
 const getProductDetails = async (req, res) => {
   const productId = req.params.id
 
@@ -245,6 +246,7 @@ const getProductDetails = async (req, res) => {
     })
   }
 }
+
 
 
 const getAllProducts = async (req, res) => {
@@ -298,6 +300,7 @@ const getAllProducts = async (req, res) => {
     })
   }
 }
+
 
 
 // delete product by seller controller 

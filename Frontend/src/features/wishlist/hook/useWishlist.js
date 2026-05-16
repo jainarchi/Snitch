@@ -26,30 +26,26 @@ export const useWishlist = () => {
         try {
             dispatch(setLoading(true))
             const data = await toggleProductInWishlist(productId)
+            await handleGetWishlist()        // update wishlist state then new set create
             return { success: true, message: data.message }
         } catch (err) {
             return { success: false, message: err.response?.data?.message || "Something went wrong" }
-        }
-        finally{
-            dispatch(setLoading( false))
         }
     }
 
     const handleRemoveFromWishlist = async (productId) => {
       
         try {
-            dispatch(setLoading(true))
-            dispatch(removeFromWishlist(productId))
+            dispatch(removeFromWishlist(productId))  
             const data = await toggleProductInWishlist(productId)
+
             return { success: true, message: data.message }
+
         } catch (err) {
-            
             handleGetWishlist()
             return { success: false, message: err.response?.data?.message || "Something went wrong" }
         }
-        finally{
-            dispatch(setLoading( false))
-        }
+       
     }
 
 

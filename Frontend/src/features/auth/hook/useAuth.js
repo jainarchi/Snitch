@@ -37,9 +37,17 @@ export const useAuth = () => {
       const data = await getMe();
       console.log(data)
       dispatch(setUser(data.user));
+      return{
+        success: true,
+        user : data.user
+      }
 
     } catch (err) {
       console.log(err);
+      return {
+        success: false,
+        message: err.response.data.message || "Something went wrong",
+      }
 
     } finally {
       dispatch(setLoading(false));

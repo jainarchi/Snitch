@@ -45,6 +45,8 @@ const Home = () => {
 
 
   if (loading) {
+      console.log("LOADING COMPONENT RENDERED ");
+
     return (<Loading />)
   }
 
@@ -118,11 +120,12 @@ const Home = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4
                             gap-x-6 sm:gap-x-8 lg:gap-x-10
                             gap-y-10 sm:gap-y-12 lg:gap-y-16">
-              {allProducts.map((product) => (
+              {allProducts.map((product , index) => (
                 <ProductCard
                   key={product._id}
                   product={product}
                   onClick={() => navigate(`/products/${product._id}`)}
+                  isPriority={index < 8}
                 />
               ))}
             </div>
