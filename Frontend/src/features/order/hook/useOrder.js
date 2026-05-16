@@ -1,4 +1,4 @@
-import { getOrderDetails, getUserOrders } from "../services/order.api";
+import { getOrderDetails, getUserOrders , getOrderConfirmed } from "../services/order.api";
 
 
 
@@ -39,11 +39,28 @@ export const useOrder = () => {
     }
 
 
+   const handleGetOrderConfirmed = async (orderId) =>{
+     try{
+        const data = await getOrderConfirmed(orderId)
+        return {
+            success : true,
+            order : data.order
+        }
+     }
+     catch(err){
+        return {
+            success : false,
+            message : err.response.data.message || "Something went wrong"
+        }
+     }
+   }
+
 
 
     return {
         handleGetUserOrders,
-        handleGetOrderDetails
+        handleGetOrderDetails,
+        handleGetOrderConfirmed
 
     }
 }

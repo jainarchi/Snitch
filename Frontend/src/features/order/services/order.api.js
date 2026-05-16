@@ -18,3 +18,9 @@ export async function getOrderDetails (orderId) {
     const response = await orderApi.get(`/orders/${orderId}`)
     return response.data 
 }
+
+
+export async function getOrderConfirmed (orderId) {
+    const response = await orderApi.get(`/orders/confirmed/${orderId}`)
+    return response.data
+}

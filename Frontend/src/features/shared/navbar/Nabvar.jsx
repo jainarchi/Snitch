@@ -192,7 +192,7 @@ const Navbar = () => {
 
 
               <Link
-                to="/cart"
+                to="/orders"
                 className="px-4 py-4 text-sm font-medium text-[#B5ADA3] hover:text-[#C9A96E] hover:bg-[#2a2620] rounded-lg transition-colors sm:hidden flex items-center gap-4"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

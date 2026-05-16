@@ -21,7 +21,7 @@ const SellerOrder = lazy(() => import("../features/seller/pages/Order"));
 const Cart = lazy(() => import("../features/cart/pages/Cart"));
 const Wishlist = lazy(() => import("../features/wishlist/pages/Wishlist"));
 
-const OrderSuccess = lazy(() => import("../features/cart/pages/OrderSuccess"));
+const OrderConfirmed = lazy(() => import("../features/cart/pages/OrderConfirmed"));
 
 const UserProfile = lazy(() => import("../features/account/pages/UserProfile"));
 
@@ -59,9 +59,9 @@ export const appRouter = createBrowserRouter([
                 </Protected>
             },
             {
-                path: `order-success`,
+                path: `order-confirmed`,
                 element: <Protected >
-                    <OrderSuccess />
+                    <OrderConfirmed />
                 </Protected>
             },
             {

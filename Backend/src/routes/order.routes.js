@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import { authenticateUser } from '../middlewares/auth.middleware.js'
-import {getOrders , getOrderDetails} from '../controllers/order.controllers.js'
+import {getOrders , getOrderDetails , orderConfirmed} from '../controllers/order.controllers.js'
 
 
 const router = Router()
@@ -24,8 +24,14 @@ router.get('/' , authenticateUser , getOrders)
 
 router.get('/:orderId' , authenticateUser , getOrderDetails)
 
+/**
+ * @route GET /api/orders/confirmed/:orderId
+ * @description Get confirmed order details
+ * @access Private
+ * @param orderId
+ */
 
-
+router.get('/confirmed/:orderId' , authenticateUser , orderConfirmed )
 
 
 

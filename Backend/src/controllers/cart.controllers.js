@@ -346,7 +346,6 @@ const createOrderController = async (req, res) => {
                 color: item.variant.color,
                 size: item.variant.size
 
-
             })),
 
         })
@@ -415,9 +414,6 @@ const verifyOrderController = async (req, res) => {
                 message: "Address not found"
             })
         }
-
-
-
 
         const isValid = validatePaymentVerification(
             { order_id: razorpay_order_id, payment_id: razorpay_payment_id },

@@ -79,7 +79,6 @@ const Cart = () => {
 
 
   const handleCheckoutOrder = async () => {
-    console.log('runnn')
       if (!selectedAddressId) {
        toast.error('Please select a delivery address')
     return
@@ -110,7 +109,7 @@ const Cart = () => {
           })
 
           if (isValid.success) {
-            navigate(`/order-success?order_id=${response?.razorpay_order_id}`)
+            navigate(`/order-confirmed?order_id=${response?.razorpay_order_id}`)
           } else {
             toast.error('Payment verification failed')
           }

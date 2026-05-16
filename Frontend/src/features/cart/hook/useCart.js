@@ -97,7 +97,6 @@ export const useCart = () => {
   const handleCreateCartOrder = async () => {
     try {
       const data = await createCartOrder()
-      console.log(data.message, data)
       return { success: true, message: data.message, paymentOrder: data.paymentOrder }
 
     } catch (err) {
@@ -125,7 +124,6 @@ export const useCart = () => {
         addressId
       })
 
-      console.log(data.message)
       return { success: true, message: data.message }
 
     } catch (err) {
