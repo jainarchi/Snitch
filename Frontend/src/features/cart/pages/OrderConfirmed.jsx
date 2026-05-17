@@ -18,6 +18,7 @@ const OrderConfirmed = () => {
       try {
         setLoading(true)
         if (!order_id) return
+        
         const res = await handleGetOrderConfirmed(order_id)
         if (!res.success) {
           toast.error(res.message)

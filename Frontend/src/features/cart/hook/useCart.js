@@ -124,7 +124,7 @@ export const useCart = () => {
         addressId
       })
 
-      return { success: true, message: data.message }
+      return { success: true, message: data.message , orderId : data.orderId}
 
     } catch (err) {
       console.log(err);

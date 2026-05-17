@@ -5,6 +5,7 @@ import orderModel from "../models/order.model.js"
 const orderConfirmed = async (req, res) => {
 
     const { orderId } = req.params
+    console.log(orderId)
 
     try {
         const order = await orderModel.findOne({

@@ -324,7 +324,8 @@ const createOrderController = async (req, res) => {
 
 
         const razorpayOrder = await createOrder({ amount: cart.totalAmount, currency: cart.currency })
-    
+
+        
 
         const payment = await paymentModel.create({
             user: req.user.id,
@@ -494,7 +495,7 @@ const verifyOrderController = async (req, res) => {
         await session.commitTransaction()
         session.endSession()
 
-
+       
         res.status(200).json({
             success: true,
             message: "Payment verified successfully",

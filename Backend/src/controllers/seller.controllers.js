@@ -9,7 +9,11 @@ const getSellerSubOrders = async (req, res) => {
 
     try {
 
-        const orders = await subOrderModel.find({ seller: sellerId }).lean();
+        const orders = await subOrderModel.find({ seller: sellerId })
+        .populate('user' , 'fullname email -_id')
+        .populate('order' , 'deliveryAddress -_id')
+        .select('-seller -__v')
+        .lean();
 
         res.status(200).json({
             success: true,
@@ -32,6 +36,9 @@ const getSellerSubOrders = async (req, res) => {
 
 
 }
+
+
+
 
 
 

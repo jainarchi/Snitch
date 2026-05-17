@@ -85,7 +85,7 @@ const Cart = () => {
   }
     const loaded = await loadRazorpay()
     if (!loaded) {
-      toast.error('Razorpay load nahi hua')
+      toast.error('error to load razorpay this time please try later')
       return
     }
 
@@ -108,8 +108,9 @@ const Cart = () => {
             addressId: selectedAddressId
           })
 
+
           if (isValid.success) {
-            navigate(`/order-confirmed?order_id=${response?.razorpay_order_id}`)
+            navigate(`/order-confirmed?order_id=${isValid.orderId}`)
           } else {
             toast.error('Payment verification failed')
           }
