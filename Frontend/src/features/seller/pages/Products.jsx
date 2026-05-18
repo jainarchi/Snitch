@@ -1,15 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useProducts } from '../../products/hook/useProducts';
+import { useSeller } from '../hook/useSeller';
 import SellerProductCard  from '../components/SellerProductCard';
+import Icons from '../../shared/icons/Icons';
 
 
-const SearchIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-  </svg>
-);
 
 const GridIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -26,11 +22,6 @@ const ListIcon = () => (
   </svg>
 );
 
-const PlusIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-  </svg>
-);
 
 const XIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -80,18 +71,16 @@ const SORT_OPTIONS = [
 
 
 
-
-
 const Products = () => {
   const navigate  = useNavigate();
-  const { handleGetAllProductsBySeller, handleDeleteProduct } = useProducts();
+  const { handleGetAllProductsBySeller, handleDeleteProduct } = useSeller();
 
-  const sellerProducts = useSelector(state => state.products?.sellerProducts ?? []);
-  const loading        = useSelector(state => state.products?.loading?.sellerProducts ?? false);
+  const sellerProducts = useSelector(state => state.seller?.products ?? []);
+  const loading        = useSelector(state => state.seller?.loading?.products ?? false);
 
   const [query,     setQuery]     = useState('');
   const [sort,      setSort]      = useState('newest');
-  const [view,      setView]      = useState('grid'); // 'grid' | 'list'
+  const [view,      setView]      = useState('grid');
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
@@ -146,10 +135,11 @@ const Products = () => {
 
  
   const totalProducts = sellerProducts.length;
-  const inStock  = sellerProducts.filter(p => Number(p.stock ?? 0) > 0).length;
+  const inStock  = sellerProducts.filter(p => Number(p.totalStock) > 0).length;
   const outOfStock = totalProducts - inStock;
 
-  /*                  ─ */
+
+
   return (
     <div className="flex flex-col min-h-screen bg-snitch-cream">
 
@@ -167,13 +157,13 @@ const Products = () => {
             </h1>
           </div>
 
-          <button
+          {/* <button
             onClick={() => navigate('/seller/create-product')}
             className="self-start sm:self-auto shrink-0 flex items-center gap-2 bg-snitch-charcoal text-snitch-cream font-label text-[0.65rem] tracking-[0.14em] uppercase px-6 py-3.5 border-0 cursor-pointer hover:bg-snitch-gold transition-colors duration-300"
           >
-            <PlusIcon />
+            <Icons.Add />
             Add Product
-          </button>
+          </button> */}
         </div>
 
         {/*   Stats row   */}
@@ -186,7 +176,7 @@ const Products = () => {
             <div key={label} className="flex flex-col gap-0.5">
               <span
                 className={[
-                  'font-serif text-[1.8rem] sm:text-[2.2rem] font-normal leading-none',
+                  ' text-[1.8rem] sm:text-[2.2rem] font-normal leading-none',
                   warn    ? 'text-amber-600'
                   : accent ? 'text-snitch-gold'
                   : 'text-snitch-charcoal',
@@ -209,7 +199,7 @@ const Products = () => {
           {/* Search */}
           <div className="relative flex-1 max-w-sm">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-snitch-faint pointer-events-none">
-              <SearchIcon />
+              <Icons.Search />
             </span>
             <input
               type="text"
@@ -300,7 +290,7 @@ const Products = () => {
               onClick={() => navigate('/seller/create-product')}
               className="mt-2 flex items-center gap-2 bg-snitch-gold text-white font-label text-[0.65rem] tracking-[0.14em] uppercase px-8 py-3.5 border-0 cursor-pointer hover:bg-snitch-charcoal transition-colors duration-300"
             >
-              <PlusIcon />
+              <Icons.Add />
               Add First Product
             </button>
           </div>
@@ -309,7 +299,7 @@ const Products = () => {
         {/*   No search results   */}
         {!loading && totalProducts > 0 && displayed.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-            <SearchIcon />
+            <Icons.Search />
             <div>
               <p className="font-serif text-[1.2rem] text-snitch-charcoal m-0 mb-1">
                 No results found.

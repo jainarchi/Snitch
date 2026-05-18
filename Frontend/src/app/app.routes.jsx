@@ -1,35 +1,30 @@
 import {lazy } from 'react'
 import {createBrowserRouter , Navigate} from 'react-router-dom'
 
+import AppLayout from './AppLayout';
+import Protected from '../features/auth/components/Protected';
 
 
 const Register = lazy(() => import("../features/auth/pages/Register"));
 const Login = lazy(() => import("../features/auth/pages/Login"));
 
 const ProductDetails = lazy(() => import("../features/products/pages/ProductDetails"));
-const CreateProduct = lazy(() => import("../features/products/pages/CreateProduct"));
 const Home = lazy(() => import("../features/products/pages/Home"));
 
+const CreateProduct = lazy(() => import("../features/seller/pages/CreateProduct"));
 const SellerDashboard = lazy(() => import("../features/seller/layout/Dashboard"));
-const SellerDashboardOverview = lazy(() => import("../features/seller/pages/Overview"));
 const EditProductDetails = lazy(() => import("../features/seller/pages/EditProductDetails"));
 const SellerSetting = lazy(() => import("../features/seller/pages/Setting"));
-const SellerRevenue = lazy(() => import("../features/seller/pages/Revenue"));
 const SellerProducts = lazy(() => import("../features/seller/pages/Products"));
 const SellerOrder = lazy(() => import("../features/seller/pages/Order"));
 
 const Cart = lazy(() => import("../features/cart/pages/Cart"));
 const Wishlist = lazy(() => import("../features/wishlist/pages/Wishlist"));
-
 const OrderConfirmed = lazy(() => import("../features/cart/pages/OrderConfirmed"));
-
 const UserProfile = lazy(() => import("../features/account/pages/UserProfile"));
-
 const Order = lazy(() => import("../features/order/pages/Order"));
 const OrderDetails = lazy(() => import("../features/order/pages/OrderDetails"));
 
-import AppLayout from './AppLayout';
-import Protected from '../features/auth/components/Protected';
 
 
 export const appRouter = createBrowserRouter([
@@ -115,11 +110,11 @@ export const appRouter = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <Navigate to="overview" replace />
+                        element: <Navigate to="products" replace />
                     },
                     {
-                        path: "overview",
-                        element: <SellerDashboardOverview />,
+                        path: "create-product",
+                        element: <CreateProduct />,
                     },
                     {
                         path: "products/:productId/variant",
@@ -128,10 +123,6 @@ export const appRouter = createBrowserRouter([
                     {
                         path: "settings",
                         element: <SellerSetting />,
-                    },
-                    {
-                        path: "revenue",
-                        element: <SellerRevenue />,
                     },
                     {
                         path: "products",

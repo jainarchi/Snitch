@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useProducts } from '../../products/hook/useProducts';
+import { useSeller } from '../hook/useSeller';
 import { variantSchema } from '../../products/validations/productValidation';
 import ProductImageUploader from '../../products/components/ProductImageUploader';
 import Add_Variant from '../../products/components/AddVariant';
@@ -10,7 +10,7 @@ import Add_Variant from '../../products/components/AddVariant';
 const EditProductDetails = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { handleGetProductDetails, handleAddProductVariant } = useProducts();
+  const { handleGetProductDetails, handleAddProductVariant } = useSeller();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);

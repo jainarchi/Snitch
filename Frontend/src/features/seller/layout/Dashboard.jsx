@@ -1,6 +1,7 @@
 import React from 'react'
 import Sidebar from '../components/Sidebar.jsx'
 import { Outlet } from 'react-router-dom'
+import SellerNavbar from '../components/SellerNavbar.jsx'
 
 const DashboardLayout = () => {
   return (
@@ -10,6 +11,7 @@ const DashboardLayout = () => {
        
 
       <div className='flex-1' >
+        <SellerNavbar />
         <Outlet/>
         
       </div>

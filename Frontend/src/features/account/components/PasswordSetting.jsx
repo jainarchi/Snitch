@@ -19,7 +19,7 @@ function PasswordField({
             {label && (
                 <label
                     htmlFor={id}
-                    className="block text-[9px] tracking-[0.2em] uppercase text-[#B5ADA3] mb-2
+                    className="block text-[9px] tracking-[0.2em] uppercase text-[#413d38] mb-2
                      font-[family-name:var(--font-sans)]"
                 >
                     {label}
@@ -35,7 +35,7 @@ function PasswordField({
                     onChange={onChange}
                     onFocus={() => setFocused(true)}
                     onBlur={() => setFocused(false)}
-                    className="w-full bg-transparent text-[#1b1c1a] text-sm pr-8
+                    className="w-full bg-transparent text-[#170c03] text-sm pr-8
                      font-[family-name:var(--font-sans)] placeholder:text-[#d0c5b5]
                      border-0 border-b outline-none py-2 transition-colors duration-300
                      [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
@@ -87,7 +87,7 @@ const PasswordSetting = ({ onSetPassword, onChangePassword }) => {
 
         onSetPassword?.(setPasswordData.password);
 
-        setPasswordData({
+        setSetPasswordData({
             password: "",
             confirmPassword: "",
         });
@@ -124,14 +124,12 @@ const PasswordSetting = ({ onSetPassword, onChangePassword }) => {
             {(mode === "set" || mode === "both") && (
                 <section className="w-full">
                     <div className="text-center mb-8 sm:mb-10">
-                        <h2 className="font-[family-name:var(--font-serif)] text-2xl sm:text-3xl text-[#23201f] font-normal mb-3 leading-snug">
-                            External Authentication detected.
+                        <h2 className="font-[family-name:var(--font-serif)] text-2xl sm:text-3xl text-[#181716] font-normal mb-3 leading-snug">
+                            Add Manual Credentials
                         </h2>              
 
                         <p className="text-sm text-[#7A6E63] font-[family-name:var(--font-sans)] max-w-xl mx-auto leading-relaxed">
-                            Your account is currently linked via{" "}
-                            <span className="text-[#1b1c1a] font-medium">Google</span>.
-                            To enable direct login you can set a unique password for accessing the your account.
+                           If you joined via Google, you can set a unique password here to enable traditional email & password login for your account.
                         </p>
                     </div>
 
@@ -175,7 +173,11 @@ const PasswordSetting = ({ onSetPassword, onChangePassword }) => {
                                     Set Password
                                 </button>
                             </div>
+                             
                         </div>
+                           <p className="font-body text-[0.7rem] text-snitch-faint m-0 mt-3 text-center">
+                Setting a password will not disable your existing social login methods.
+              </p>
                     </div>
                 </section>
             )}
@@ -184,7 +186,7 @@ const PasswordSetting = ({ onSetPassword, onChangePassword }) => {
             {(mode === "change" || mode === "both") && (
                 <section className="w-full">
                     <div className="text-center mb-8">
-                        <h2 className="font-[family-name:var(--font-serif)] text-2xl sm:text-3xl text-[#1b1c1a] font-normal leading-snug mb-3">
+                        <h2 className="font-[family-name:var(--font-serif)] text-2xl sm:text-3xl text-[#181716] font-normal leading-snug mb-3">
                             Revise Credentials.
                         </h2>
                         <p className='text-sm max-w-xl mx-auto text-[#7A6E63] '>Maintain the security of your profile by updating your password periodically. Ensure your new password is strong, unique, and not used elsewhere.</p>

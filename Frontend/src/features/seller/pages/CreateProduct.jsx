@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useProducts } from '../hook/useProducts.js'
+import { useSeller } from '../hook/useSeller.js'
 import { useNavigate } from 'react-router';
-import ProductImageUploader from '../components/ProductImageUploader.jsx';
-import AddVariant from '../components/AddVariant.jsx';
-import { createProductSchema } from '../validations/productValidation.js';
+import ProductImageUploader from '../../products/components/ProductImageUploader.jsx';
+import AddVariant from '../../products/components/AddVariant.jsx';
+import { createProductSchema } from '../../products/validations/productValidation.js';
 
 const CURRENCIES = ['INR', 'USD', 'EUR', 'GBP'];
 const MAX_IMAGES = 5;
 
 const CreateProduct = () => {
-    const { handleCreateProduct } = useProducts();
+    const { handleCreateProduct } = useSeller();
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({

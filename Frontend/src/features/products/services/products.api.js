@@ -7,18 +7,7 @@ const productApi = axios.create({
 })
 
 
-export async function createProducts (formData){
- const response = await productApi.post('/' , formData)
- return response.data
-}
 
-
-// get all products made by seller and show on seller dashboard
-export async function getAllProductsBySeller (){
-    const response = await productApi.get('/seller')
-    return response.data
-  
-}
 
 
 // get all products to show on home page
@@ -37,17 +26,6 @@ export async function getProductDetails(productId){
     return response.data
 }
 
-
-export async function deleteProduct (productId){
-    const response = await productApi.delete(`/${productId}`)
-    return response.data
-}
-
-
-export async function addProductVariant(productId , formData){
-    const response = await productApi.post(`/${productId}/variant` , formData)
-    return response.data
-}
 
 
 

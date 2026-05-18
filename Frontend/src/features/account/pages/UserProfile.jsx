@@ -5,15 +5,8 @@ import Icons from "../../shared/icons/Icons";
 import { useAccount } from "../hook/useAccount";
 import { toast } from "react-toastify";
 import { userAddressSchema } from "../validation/UserAddress.validator.js";
+import {profileLogo} from "../../shared/utils/profileLogo";
 
-const getInitials = (name = "") => {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-};
 
 function UnderlineField({
   id,
@@ -190,6 +183,7 @@ export default function Profile() {
     fetchStates();
   }, []);
 
+  
   useEffect(() => {
     if (!formData.state) return;
     console.log(formData.state);
@@ -275,7 +269,7 @@ export default function Profile() {
       <header className="flex flex-col justify-center gap-4 px-4 py-8 items-center">
         <div className="w-14 h-14 border border-[#d0c5b5] bg-[#3b2003] flex items-center justify-center">
           <span className="font-[family-name:var(--font-serif)] text-xl text-[#fffaf5] tracking-wider">
-            {getInitials(user?.fullname)}
+            {profileLogo(user?.fullname)}
           </span>
         </div>
 

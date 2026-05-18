@@ -4,7 +4,8 @@ import { useOrder } from '../hook/useOrder';
 import OrderCard from '../component/OrderCard';
 import Icons from '../../shared/icons/Icons';
 
-/* ── Filter tabs — matches screenshot style ── */
+
+
 const FILTERS = [
   { key: 'all',       label: 'Active Orders' },
   { key: 'delivered', label: 'Past Orders'   },
